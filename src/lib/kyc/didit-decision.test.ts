@@ -16,17 +16,24 @@ const base = {
 const expectIds = { sessionId: base.session_id, vendorData: base.vendor_data };
 
 describe("readDiditDecision", () => {
-  it("extracts only the anchor fields, never names, dates or images", () => {
+  it("extracts only the anchor fields, the age vector and the legal name, never dates or images", () => {
     const r = readDiditDecision(base, expectIds);
     expect(r).toEqual({
       ok: true,
       jurisdiction: "ESP",
       isRealHuman: true,
-      ageFloor: 21,
+      ageVector: 511,
+      legalName: { first: "Carmen", last: "Española" },
       claims: { issuingState: "ESP", nationality: "ESP", documentType: "Identity Card", documentNumber: "CAA000000", personalNumber: "99999999R" },
     });
     const flat = JSON.stringify(r);
-    for (const pii of ["Carmen", "Española", "1980", "01-01", "jpg"]) expect(flat).not.toContain(pii);
+    for (const pii of ["1980", "01-01", "jpg"]) expect(flat).not.toContain(pii);
+  });
+
+  it("drops a legal name that is missing or not a plausible name", () => {
+    const doc = base.id_verifications[0]!;
+    const r = readDiditDecision({ ...base, id_verifications: [{ ...doc, last_name: "<script>" }] }, expectIds);
+    expect(r.ok && r.legalName).toBeNull();
   });
 
   it("prefers the state-signed NFC chip read over OCR", () => {
