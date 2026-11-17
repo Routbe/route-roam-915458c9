@@ -14,6 +14,7 @@ import { loadDeviceKey, saveDeviceKey, workspaceKeyFromMaster, type WorkspaceKey
 import { decryptLedgerEvent, generateLedgerKeys, unlockLedgerKey } from "@/lib/ledger/crypto";
 import { wipe, wipeMessage } from "@/lib/crypto/wipe";
 import { newDocumentKey, openDocument, sealDocument, SignEnvelopeError } from "@/lib/sign/sign-envelope";
+import { sanitizePdf, sha256Hex } from "@/lib/sign/pdf-sanitizer";
 import { BHM_MAX_HASHES, bhmPreimage, isBhmKind } from "@/lib/oauth/blind-hash";
 import { claimSubject } from "@/lib/recovery/pairwise";
 import {
@@ -1342,6 +1343,25 @@ const coreHandlers: CoreHandlers = {
       throw e;
     } finally {
       wipe(k);
+    }
+  },
+
+  async "sign.attest"({ key, envelope }) {
+    const k = bytes(key);
+    const env = bytes(envelope);
+    let plain: Uint8Array | null = null;
+    let clean: Uint8Array | null = null;
+    try {
+      plain = await openDocument(k, env, "original");
+      const res = await sanitizePdf(plain);
+      if (!res.ok) return fail("invalid_input");
+      clean = res.bytes;
+      return { sourceSha256: await sha256Hex(env), digest: await sha256Hex(clean), signedEnvelope: await sealDocument(k, clean, "signed") };
+    } catch (e) {
+      if (e instanceof SignEnvelopeError) return fail(e.message === "decrypt" ? "decrypt_failed" : "invalid_input");
+      throw e;
+    } finally {
+      wipe(k, plain, clean);
     }
   },
 

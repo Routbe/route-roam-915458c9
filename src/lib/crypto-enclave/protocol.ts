@@ -234,6 +234,12 @@ export interface EnclaveOps {
   "sign.seal": { req: { pdf: Uint8Array }; res: { envelope: Uint8Array; key: Uint8Array } };
   "sign.open": { req: { key: Uint8Array; envelope: Uint8Array; role: "original" | "signed" }; res: { plaintext: Uint8Array } };
   /**
+   * Signer side: opens the original with the link key (transferred, wiped), runs the PDF sanitizer,
+   * and returns the SHA-256 of the stored envelope, the SHA-256 of the sanitized PDF and that PDF
+   * re-sealed as the "signed" copy under the same key. No plaintext leaves the worker here.
+   */
+  "sign.attest": { req: { key: Uint8Array; envelope: Uint8Array }; res: { sourceSha256: string; digest: string; signedEnvelope: Uint8Array } };
+  /**
    * Pedersen commitment C = v·g + r·h (Stap 7b, bulletproofs.ts). value is a
    * bigint in [0, 2^64 - 1]; without `blinding` a fresh 32-octet one is drawn
    * in the engine. The blinding is the secret opening: transferred in, wiped.

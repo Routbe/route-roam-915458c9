@@ -105,6 +105,8 @@ describe("cryptographic enclave", () => {
     expect(linkKey.every((x) => x === 0)).toBe(true);
     expect(await code("sign.open", { key: key.slice(), envelope: envelope.slice(), role: "signed" })).toBe("decrypt_failed");
     expect(await code("sign.open", { key: key.slice(), envelope: envelope.slice(), role: "other" as never })).toBe("invalid_input");
+    // Not a real PDF: the sanitizer refuses it, so no signed copy is ever produced.
+    expect(await code("sign.attest", { key: key.slice(), envelope: envelope.slice() })).toBe("invalid_input");
   });
 
   it("seals UI plaintext and wipes the transferred input", async () => {
