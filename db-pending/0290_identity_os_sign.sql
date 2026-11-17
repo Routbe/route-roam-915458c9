@@ -294,7 +294,7 @@ as $function$
 $function$;
 
 -- Server, after the signing service returned: records the signature once.
--- Answers ok | no_context | not_found | expired | not_open | no_legal_identity | own_request | invalid_input.
+-- Answers ok | no_context | not_found | expired | not_open | no_legal_identity | invalid_input.
 create function public.rout_sign_request_mark_signed(p_id uuid, p_binding text, p_digest text, p_signed bytea)
  returns text language plpgsql volatile security definer set search_path = pg_catalog, pg_temp
 as $function$
