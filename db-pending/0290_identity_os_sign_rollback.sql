@@ -12,7 +12,7 @@ end $$;
 
 drop function if exists public.rout_sign_requests_mine();
 drop function if exists public.rout_sign_request_revoke(uuid);
-drop function if exists public.rout_sign_request_mark_signed(uuid, text, text, bytea);
+drop function if exists public.rout_sign_request_mark_signed(uuid, text, text, text, bytea);
 drop function if exists public.rout_sign_request_open(uuid);
 drop function if exists public.rout_sign_request_create(bytea, integer, integer);
 drop table if exists public.sign_requests;

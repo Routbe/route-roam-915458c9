@@ -293,9 +293,10 @@ as $function$
    where r.id = p_id and r.status <> 'revoked' and public.rout_current_user_id() is not null
 $function$;
 
--- Server, after the signing service returned: records the signature once.
--- Answers ok | no_context | not_found | expired | not_open | no_legal_identity | invalid_input.
-create function public.rout_sign_request_mark_signed(p_id uuid, p_binding text, p_digest text, p_signed bytea)
+-- Server, after the signing service returned: records the signature once, and only for exactly the
+-- sealed PDF that was decrypted and signed (p_source_sha256 = the stored ciphertext's SHA-256).
+-- Answers ok | no_context | not_found | expired | not_open | no_legal_identity | invalid_input | source_changed.
+create function public.rout_sign_request_mark_signed(p_id uuid, p_source_sha256 text, p_binding text, p_digest text, p_signed bytea)
  returns text language plpgsql volatile security definer set search_path = pg_catalog, pg_temp
 as $function$
 declare
@@ -303,7 +304,8 @@ declare
   r      public.sign_requests%rowtype;
 begin
   if v_user is null then return 'no_context'; end if;
-  if p_binding is null or p_binding !~ '^[0-9a-f]{64}$' or p_digest is null or p_digest !~ '^[0-9a-f]{64}$'
+  if p_source_sha256 is null or p_source_sha256 !~ '^[0-9a-f]{64}$'
+     or p_binding is null or p_binding !~ '^[0-9a-f]{64}$' or p_digest is null or p_digest !~ '^[0-9a-f]{64}$'
      or p_signed is null or pg_catalog.octet_length(p_signed) not between 64 and 16000000 then
     return 'invalid_input';
   end if;
@@ -311,6 +313,7 @@ begin
   if not found or r.status = 'revoked' then return 'not_found'; end if;
   if r.status <> 'open' then return 'not_open'; end if;
   if r.expires_at <= pg_catalog.now() then return 'expired'; end if;
+  if r.ciphertext_sha256 <> p_source_sha256 then return 'source_changed'; end if;
   if not exists (select 1 from public.verified_identity_nullifiers n
                   where n.user_id = v_user and n.evidence = 'kyc_document' and n.has_legal_identity) then
     return 'no_legal_identity';
@@ -345,11 +348,11 @@ $function$;
 
 revoke all on function public.rout_sign_request_create(bytea, integer, integer) from public, rout_app;
 revoke all on function public.rout_sign_request_open(uuid) from public, rout_app;
-revoke all on function public.rout_sign_request_mark_signed(uuid, text, text, bytea) from public, rout_app;
+revoke all on function public.rout_sign_request_mark_signed(uuid, text, text, text, bytea) from public, rout_app;
 revoke all on function public.rout_sign_request_revoke(uuid) from public, rout_app;
 revoke all on function public.rout_sign_requests_mine() from public, rout_app;
 grant execute on function public.rout_sign_request_create(bytea, integer, integer) to rout_app;
 grant execute on function public.rout_sign_request_open(uuid) to rout_app;
-grant execute on function public.rout_sign_request_mark_signed(uuid, text, text, bytea) to rout_app;
+grant execute on function public.rout_sign_request_mark_signed(uuid, text, text, text, bytea) to rout_app;
 grant execute on function public.rout_sign_request_revoke(uuid) to rout_app;
 grant execute on function public.rout_sign_requests_mine() to rout_app;

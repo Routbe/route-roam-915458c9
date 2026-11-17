@@ -134,11 +134,13 @@ describe("sign requests", () => {
   });
 
   it("only a KYC legal identity marks it signed, exactly once", async () => {
-    const MARK = "select public.rout_sign_request_mark_signed($1::uuid, $2, $3, $4) as r";
-    expect((await one<{ r: string }>(PLAIN, MARK, [id, hex("a"), hex("b"), ct()])).r).toBe("no_legal_identity");
-    expect((await one<{ r: string }>(KYC, MARK, [id, "zz", hex("b"), ct()])).r).toBe("invalid_input");
-    expect((await one<{ r: string }>(KYC, MARK, [id, hex("a"), hex("b"), ct()])).r).toBe("ok");
-    expect((await one<{ r: string }>(OTHER, MARK, [id, hex("c"), hex("d"), ct()])).r).toBe("not_open");
+    const MARK = "select public.rout_sign_request_mark_signed($1::uuid, $2, $3, $4, $5) as r";
+    const src = (await one<{ s: string }>(PLAIN, "select ciphertext_sha256 as s from public.rout_sign_request_open($1::uuid)", [id])).s;
+    expect((await one<{ r: string }>(PLAIN, MARK, [id, src, hex("a"), hex("b"), ct()])).r).toBe("no_legal_identity");
+    expect((await one<{ r: string }>(KYC, MARK, [id, src, "zz", hex("b"), ct()])).r).toBe("invalid_input");
+    expect((await one<{ r: string }>(KYC, MARK, [id, hex("e"), hex("a"), hex("b"), ct()])).r).toBe("source_changed");
+    expect((await one<{ r: string }>(KYC, MARK, [id, src, hex("a"), hex("b"), ct()])).r).toBe("ok");
+    expect((await one<{ r: string }>(OTHER, MARK, [id, src, hex("c"), hex("d"), ct()])).r).toBe("not_open");
     const owner = await one<{ status: string; signed_ciphertext: Uint8Array | null }>(PLAIN, "select status, signed_ciphertext from public.rout_sign_request_open($1::uuid)", [id]);
     expect(owner.status).toBe("signed");
     expect(owner.signed_ciphertext).not.toBeNull();
