@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { requireAuth } from "@/lib/auth/middleware";
+import { requireAuth, requireSudo } from "@/lib/auth/middleware";
 import { ingestPayloadSchema, type OmniJob } from "@/lib/omni-ingest";
 
 /** Studio: returns immediately with a job id; the dedicated daemon processes the persisted job. */

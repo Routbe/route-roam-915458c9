@@ -193,7 +193,7 @@ export function OAuthConsole() {
   async function onRotate(row: ClientRow) {
     setBusy(true);
     try {
-      const result = (await withStepUp(() => rotate({ data: { id: row.id } }))) as { clientSecret: string };
+      const result = (await withSudo(() => rotate({ data: { id: row.id } }))) as { clientSecret: string };
       setSecret({ clientId: row.clientId, value: result.clientSecret });
       setRevealed(true);
       toast.success(trI18n.t("ui.e277863460"));

@@ -2,7 +2,7 @@ import { requireDeveloperAccess } from "@/lib/auth/developer-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { cleanRedirectUri } from "./redirect-match";
-import { optionalAuth, requireAuth } from "@/lib/auth/middleware";
+import { optionalAuth, requireAuth, requireSudo } from "@/lib/auth/middleware";
 import { needsStepUp, shareRichIdentity, STRICT_ACR } from "./step-up";
 import { clientSchema, settingsSchema, testUserSchema, verificationRequestSchema } from "./console-schemas";
 

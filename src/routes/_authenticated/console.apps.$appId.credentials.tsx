@@ -81,7 +81,7 @@ function CredentialsPage() {
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   onClick={async () => {
                     setBusy(true);
-                    try { setSecret((await withStepUp(() => rotate({ data: { id: app.id } }))).clientSecret); }
+                    try { setSecret((await withSudo(() => rotate({ data: { id: app.id } }))).clientSecret); }
                     catch (e) { toast.error(errorText(e, "Vernieuwen mislukt.")); }
                     finally { setBusy(false); }
                   }}
