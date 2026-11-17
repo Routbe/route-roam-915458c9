@@ -54,7 +54,7 @@ export const getIngestTokenStatus = createServerFn({ method: "GET" })
 
 /** Creates or rotates the webhook token. The raw token is shown once; only its SHA-256 is stored. */
 export const rotateIngestToken = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireAuth, requireSudo("ingest_token_rotate")])
   .handler(async ({ context }): Promise<{ token: string }> => {
     const token = crypto.randomUUID();
     const { sha256Hex } = await import("@/lib/omni-ingest.server");

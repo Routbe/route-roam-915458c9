@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireAuth } from "@/lib/auth/middleware";
+import { requireAuth, requireSudo } from "@/lib/auth/middleware";
 
 const uuid = z.string().uuid();
 const b64u = (min: number, max: number) => z.string().min(min).max(max).regex(/^[A-Za-z0-9_-]+$/);
@@ -16,7 +16,7 @@ export const getWsInbox = createServerFn({ method: "GET" })
 
 /** Publishes the next key epoch and stores the caller's own envelope, atomically. */
 export const initWsInboxKey = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireAuth, requireSudo("workspace_key_rotate")])
   .inputValidator((d: unknown) =>
     z.object({
       workspaceId: uuid,

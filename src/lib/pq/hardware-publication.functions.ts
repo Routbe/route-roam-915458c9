@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireAuth } from "@/lib/auth/middleware";
+import { requireAuth, requireSudo } from "@/lib/auth/middleware";
 
 const bytes = z.string().regex(/^[A-Za-z0-9_-]+$/).max(8192);
 const assertion = z.object({ credentialId: bytes, authenticatorData: bytes, clientDataJSON: bytes, signature: bytes });
@@ -21,7 +21,7 @@ export const hardwarePublicationStatus = createServerFn({ method: "GET" }).middl
 });
 
 /** Uses only existing DB capabilities, a fresh passkey proof and worker-generated public/encrypted material. */
-export const publishHardwareIdentity = createServerFn({ method: "POST" }).middleware([requireAuth]).inputValidator((v: unknown) => input.parse(v)).handler(async ({ context, data }) => {
+export const publishHardwareIdentity = createServerFn({ method: "POST" }).middleware([requireAuth, requireSudo("hardware_identity")]).inputValidator((v: unknown) => input.parse(v)).handler(async ({ context, data }) => {
  const { storageConfigured, putObject } = await import("@/lib/storage/s3.server");
  if (!storageConfigured("client")) return { ok: false, reason: "storage_unavailable" };
  const { ensureStepUpProof } = await import("@/lib/auth/step-up.server");
