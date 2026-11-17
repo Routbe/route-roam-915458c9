@@ -118,6 +118,7 @@
     "next-themes": "^0.4.6",
     "node-forge": "^1.4.2",
     "parse5": "^8.0.1",
+    "pdfjs-dist": "4.10.38",
     "qr-code-styling": "^1.9.2",
     "qrcode-generator": "^2.0.4",
     "qrcode.react": "^4.2.0",
