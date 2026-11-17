@@ -43,7 +43,27 @@ const SCOPES = [
     text: "Leest enkel de publieke verificatiestatus (geverifieerde mens ja/nee). Nooit identity relays of wettelijke naam.",
     locked: false,
   },
+  {
+    id: "sybil_proof",
+    label: "sybil_proof",
+    text: "Eén mens = één account in jouw app: je krijgt app_nullifier = BLAKE3(universele nullifier + jouw app-ID). Altijd dezelfde waarde voor dezelfde persoon bij jou, onbruikbaar om leden tussen apps te koppelen.",
+    locked: false,
+  },
+  {
+    id: "real_human",
+    label: "real_human",
+    text: "Enkel is_real_human (true/false). True alleen na een zero-knowledge-menselijkheidsbewijs, nooit na KYC of betaling.",
+    locked: false,
+  },
+  {
+    id: "legal_identity",
+    label: "legal_identity",
+    text: "has_legal_identity (true/false) en de wettelijke naam alleen als ROUT die bewaart én het lid dit expliciet aanvinkt. Didit-verificaties bewaren geen naam: dan krijg je enkel de boolean.",
+    locked: false,
+  },
 ];
+
+const AGE_MINIMA = [13, 14, 15, 16, 17, 18, 19, 20, 21];
 
 function ScopesPage() {
   const { appId } = Route.useParams();
@@ -77,6 +97,25 @@ function ScopesPage() {
             </li>
           ))}
         </ul>
+      </ConsoleCard>
+      <ConsoleCard title="age_gate" description="Leeftijdscontrole zonder geboortedatum: je app krijgt enkel age_over_N (true/false) uit een KYC-verificatie. Kies één grens.">
+        <label className="flex items-center gap-3 text-sm">
+          <span className="flex-1">Minimumleeftijd</span>
+          <select
+            className="min-h-11 rounded-md border border-input bg-background px-3 text-sm"
+            disabled={saving}
+            value={app.scopes.find((x) => x.startsWith("age_gate:"))?.slice(9) ?? ""}
+            onChange={(e) => {
+              const rest = app.scopes.filter((x) => !x.startsWith("age_gate:"));
+              persist({ scopes: e.target.value ? [...rest, `age_gate:${e.target.value}`] : rest });
+            }}
+          >
+            <option value="">Uit</option>
+            {AGE_MINIMA.map((n) => (
+              <option key={n} value={n}>{n}+</option>
+            ))}
+          </select>
+        </label>
       </ConsoleCard>
       <HandleSyncCard app={app} saving={saving} persist={persist} />
       <ConsoleCard title="Autorisatie-URL (PKCE)" description="PKCE met S256 is verplicht.">
