@@ -98,7 +98,7 @@ export const revokeSignRequestFn = createServerFn({ method: "POST" })
  * for exactly the stored envelope. Not a PAdES / qualified signature (phase 1).
  */
 export const signSignRequest = createServerFn({ method: "POST" })
-  .middleware([requireSudo("document_sign")])
+  .middleware([requireAuth, requireSudo("document_sign")])
   .inputValidator((d: unknown) => z.object({ id, sourceSha256: hex64, digest: hex64, signedEnvelope: envelopeB64 }).parse(d))
   .handler(async ({ data, context }) => {
     const { recordSignature } = await import("./sign.server");
