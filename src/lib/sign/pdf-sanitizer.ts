@@ -89,33 +89,6 @@ function filters(dict: string): string[] | null {
 
 const has = (dict: string, re: RegExp) => re.test(dict);
 
-/** Name tokens outside literal strings and comments, with their offsets. */
-function* nameTokens(s: string, from: number, to: number): Generator<{ at: number; raw: string }> {
-  let i = from;
-  while (i < to) {
-    const c = s[i]!;
-    if (c === "%") {
-      while (i < to && s[i] !== "\n" && s[i] !== "\r") i++;
-    } else if (c === "(") {
-      let depth = 1;
-      i++;
-      while (i < to && depth > 0) {
-        if (s[i] === "\\") i += 2;
-        else {
-          if (s[i] === "(") depth++;
-          else if (s[i] === ")") depth--;
-          i++;
-        }
-      }
-    } else if (c === "/") {
-      let j = i + 1;
-      while (j < to && !DELIM.test(s[j]!)) j++;
-      yield { at: i + 1, raw: s.slice(i + 1, j) };
-      i = j;
-    } else i++;
-  }
-}
-
 type Tok = { t: "num" | "op" | "other"; v: string; start: number; end: number };
 
 /** Content-stream tokenizer: skips strings, hex strings, arrays' brackets, dicts and inline images. */
@@ -162,7 +135,7 @@ type Gs = { fillWhite: boolean; ctmScale: number; tr: number; fontSize: number; 
 export function stripHiddenText(content: string): { text: string; removed: Record<HiddenKind, number> } {
   const toks = tokenize(content);
   const removed: Record<HiddenKind, number> = { invisible: 0, white: 0, tiny: 0 };
-  const cut: [number, number][] = [];
+  const cut: { a: number; b: number; nextLine: boolean }[] = [];
   const stack: Gs[] = [];
   let gs: Gs = { fillWhite: false, ctmScale: 1, tr: 0, fontSize: 12, tmScale: 1 };
   let operandStart = -1;
@@ -177,7 +150,7 @@ export function stripHiddenText(content: string): { text: string; removed: Recor
     switch (op) {
       case "q": stack.push({ ...gs }); break;
       case "Q": gs = stack.pop() ?? gs; break;
-      case "cm": if (nums.length >= 4) gs.ctmScale *= Math.hypot(nums[nums.length - 4 + 2]!, nums[nums.length - 4 + 3]!) || 1; break;
+      case "cm": if (nums.length >= 6) gs.ctmScale *= Math.hypot(nums[nums.length - 4]!, nums[nums.length - 3]!) || 1; break;
       case "rg": if (nums.length >= 3) gs.fillWhite = nums.slice(-3).every((x) => x >= 0.98); break;
       case "g": if (nums.length >= 1) gs.fillWhite = nums[nums.length - 1]! >= 0.98; break;
       case "k": if (nums.length >= 4) gs.fillWhite = nums.slice(-4).every((x) => x <= 0.02); break;
@@ -192,9 +165,7 @@ export function stripHiddenText(content: string): { text: string; removed: Recor
         if (kind) {
           removed[kind]++;
           // ' and " also move to the next line: keep the move, drop the text.
-          const replacement = op === "Tj" || op === "TJ" ? "" : " T* ";
-          cut.push([operandStart < 0 ? tk.start : operandStart, tk.end]);
-          if (replacement) cut[cut.length - 1]!.push(0);
+          cut.push({ a: operandStart < 0 ? tk.start : operandStart, b: tk.end, nextLine: op === "'" || op === "\"" });
         }
         break;
       }
@@ -206,8 +177,8 @@ export function stripHiddenText(content: string): { text: string; removed: Recor
   let out = "";
   let last = 0;
   for (const c of cut) {
-    out += content.slice(last, c[0]) + (c.length > 2 ? " T* " : " ");
-    last = c[1];
+    out += content.slice(last, c.a) + (c.nextLine ? " T* " : " ");
+    last = c.b;
   }
   return { text: out + content.slice(last), removed };
 }
@@ -243,6 +214,30 @@ function stripKeys(dict: string, keys: string[]): string {
   return out + dict.slice(last);
 }
 
+/** Direct or indirect (`N G R`) integer /Length of a stream dictionary, else null. */
+function streamLength(s: string, dict: string): number | null {
+  const direct = /\/Length\s+(\d+)(?!\s+\d+\s+R)/.exec(dict);
+  if (direct) return Number(direct[1]);
+  const ref = /\/Length\s+(\d+)\s+(\d+)\s+R/.exec(dict);
+  if (!ref) return null;
+  const def = [...s.matchAll(new RegExp(`(?:^|[^0-9])${ref[1]}\\s+${ref[2]}\\s+obj\\s*(\\d+)\\s*endobj`, "g"))].pop();
+  return def ? Number(def[1]) : null;
+}
+
+/** Overwrites dangerous name tokens in s[from, to) inside `chars` with an inert name of equal length. */
+function neutralizeNames(s: string, from: number, to: number, chars: string[], found: string[]): void {
+  const re = /\/([^\s()<>\[\]{}\/%]+)/g;
+  re.lastIndex = from;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s)) && m.index < to) {
+    const name = decodeName(m[1]!);
+    if (!DANGEROUS.has(name)) continue;
+    found.push(name);
+    chars[m.index + 1] = "N";
+    for (let k = 2; k <= m[1]!.length; k++) chars[m.index + k] = "x";
+  }
+}
+
 export async function sanitizePdf(input: Uint8Array): Promise<SanitizeResult> {
   if (input.length > MAX_PDF_BYTES) return { ok: false, reason: "too_large" };
   const head = latin1(input.subarray(0, 1024));
@@ -258,17 +253,21 @@ export async function sanitizePdf(input: Uint8Array): Promise<SanitizeResult> {
   const live = new Map<number, StreamObj>();
   for (const st of streams) live.set(st.num, st);
 
-  // 1. Active content: neutralise names outside stream data, in place.
-  const inData = (at: number) => streams.some((st) => at >= st.dataStart && at < st.dataEnd);
-  const chars = s.split("");
+  // 1. Active content: neutralise dangerous names in place everywhere a reader could parse objects.
+  // Stream data is skipped only where the stream's /Length agrees with our boundaries, so a
+  // stream that lies about its length can never hide objects from the scan.
+  const trusted = streams
+    .filter((st) => streamLength(s, st.dict) === st.dataEnd - st.dataStart)
+    .map((st) => [st.dataStart, st.dataEnd] as const);
   const neutralized: string[] = [];
-  for (const { at, raw } of nameTokens(s, 0, s.length)) {
-    if (!DANGEROUS.has(decodeName(raw)) || inData(at)) continue;
-    neutralized.push(decodeName(raw));
-    chars[at] = "N";
-    for (let k = 1; k < raw.length; k++) chars[at + k] = "x";
+  const chars = s.split("");
+  let segStart = 0;
+  for (const [a, b] of [...trusted, [s.length, s.length] as const]) {
+    neutralizeNames(s, segStart, a, chars, neutralized);
+    segStart = b;
   }
   s = chars.join("");
+  const dictOf = (st: StreamObj) => s.slice(st.dataStart - (st.dataStart - st.objStart), st.dataStart);
 
   // 2. Live streams: object streams may not hide dangerous names; content streams lose hidden text.
   const removedText: Record<HiddenKind, number> = { invisible: 0, white: 0, tiny: 0 };
@@ -287,16 +286,18 @@ export async function sanitizePdf(input: Uint8Array): Promise<SanitizeResult> {
     if (!data) return { ok: false, reason: "unsupported_stream" };
     const text = latin1(data);
     if (isObjStm) {
-      for (const { raw: nm } of nameTokens(text, 0, text.length)) {
-        if (DANGEROUS.has(decodeName(nm))) return { ok: false, reason: "hidden_in_object_stream" };
-      }
+      const probe: string[] = [];
+      neutralizeNames(text, 0, text.length, text.split(""), probe);
+      if (probe.length) return { ok: false, reason: "hidden_in_object_stream" };
       continue;
     }
     if (!/\bBT\b/.test(text)) continue;
     const res = stripHiddenText(text);
     if (res.text === text) continue;
     for (const k of Object.keys(removedText) as HiddenKind[]) removedText[k] += res.removed[k];
-    const dict = stripKeys(latin1(input.subarray(0, 0)) + st.dict, ["/Length", "/Filter", "/DecodeParms"]).trim();
+    const live = dictOf(st);
+    const dictText = live.slice(live.search(/<</), live.lastIndexOf(">>") + 2);
+    const dict = stripKeys(dictText, ["/Length", "/Filter", "/DecodeParms"]).trim();
     rewritten.push({ num: st.num, gen: st.gen, dict, data: res.text });
   }
 
