@@ -216,7 +216,7 @@ function stripKeys(dict: string, keys: string[]): string {
 
 /** Direct or indirect (`N G R`) integer /Length of a stream dictionary, else null. */
 function streamLength(s: string, dict: string): number | null {
-  const direct = /\/Length\s+(\d+)(?!\s+\d+\s+R)/.exec(dict);
+  const direct = /\/Length\s+(\d+)(?!\d)(?!\s+\d+\s+R)/.exec(dict);
   if (direct) return Number(direct[1]);
   const ref = /\/Length\s+(\d+)\s+(\d+)\s+R/.exec(dict);
   if (!ref) return null;
