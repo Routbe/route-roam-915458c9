@@ -416,6 +416,7 @@ import { Route as ApiPublicYoutubeCardRouteImport } from './routes/api_.public.y
 import { Route as ApiPublicYoutubePushRouteImport } from './routes/api_.public.youtube.push'
 import { Route as ApiUserVaultExportRouteImport } from './routes/api_.user.vault.export'
 import { Route as ApiV1AgentVaultRouteImport } from './routes/api_.v1.agent.vault'
+import { Route as ApiV1AuthSudoRouteImport } from './routes/api_.v1.auth.sudo'
 import { Route as ApiV1KycStatusRouteImport } from './routes/api_.v1.kyc.status'
 import { Route as ApiV1LedgerEventsRouteImport } from './routes/api_.v1.ledger.events'
 import { Route as ApiV1PowChallengeRouteImport } from './routes/api_.v1.pow.challenge'
@@ -2582,6 +2583,11 @@ const ApiV1AgentVaultRoute = ApiV1AgentVaultRouteImport.update({
   path: '/api/v1/agent/vault',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1AuthSudoRoute = ApiV1AuthSudoRouteImport.update({
+  id: '/api_/v1/auth/sudo',
+  path: '/api/v1/auth/sudo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV1KycStatusRoute = ApiV1KycStatusRouteImport.update({
   id: '/api_/v1/kyc/status',
   path: '/api/v1/kyc/status',
@@ -3192,6 +3198,7 @@ export interface FileRoutesByFullPath {
   '/api/public/youtube/push': typeof ApiPublicYoutubePushRoute
   '/api/user/vault/export': typeof ApiUserVaultExportRoute
   '/api/v1/agent/vault': typeof ApiV1AgentVaultRoute
+  '/api/v1/auth/sudo': typeof ApiV1AuthSudoRoute
   '/api/v1/kyc/status': typeof ApiV1KycStatusRoute
   '/api/v1/ledger/events': typeof ApiV1LedgerEventsRoute
   '/api/v1/pow/challenge': typeof ApiV1PowChallengeRoute
@@ -3618,6 +3625,7 @@ export interface FileRoutesByTo {
   '/api/public/youtube/push': typeof ApiPublicYoutubePushRoute
   '/api/user/vault/export': typeof ApiUserVaultExportRoute
   '/api/v1/agent/vault': typeof ApiV1AgentVaultRoute
+  '/api/v1/auth/sudo': typeof ApiV1AuthSudoRoute
   '/api/v1/kyc/status': typeof ApiV1KycStatusRoute
   '/api/v1/ledger/events': typeof ApiV1LedgerEventsRoute
   '/api/v1/pow/challenge': typeof ApiV1PowChallengeRoute
@@ -4063,6 +4071,7 @@ export interface FileRoutesById {
   '/api_/public/youtube/push': typeof ApiPublicYoutubePushRoute
   '/api_/user/vault/export': typeof ApiUserVaultExportRoute
   '/api_/v1/agent/vault': typeof ApiV1AgentVaultRoute
+  '/api_/v1/auth/sudo': typeof ApiV1AuthSudoRoute
   '/api_/v1/kyc/status': typeof ApiV1KycStatusRoute
   '/api_/v1/ledger/events': typeof ApiV1LedgerEventsRoute
   '/api_/v1/pow/challenge': typeof ApiV1PowChallengeRoute
@@ -4508,6 +4517,7 @@ export interface FileRouteTypes {
     | '/api/public/youtube/push'
     | '/api/user/vault/export'
     | '/api/v1/agent/vault'
+    | '/api/v1/auth/sudo'
     | '/api/v1/kyc/status'
     | '/api/v1/ledger/events'
     | '/api/v1/pow/challenge'
@@ -4934,6 +4944,7 @@ export interface FileRouteTypes {
     | '/api/public/youtube/push'
     | '/api/user/vault/export'
     | '/api/v1/agent/vault'
+    | '/api/v1/auth/sudo'
     | '/api/v1/kyc/status'
     | '/api/v1/ledger/events'
     | '/api/v1/pow/challenge'
@@ -5378,6 +5389,7 @@ export interface FileRouteTypes {
     | '/api_/public/youtube/push'
     | '/api_/user/vault/export'
     | '/api_/v1/agent/vault'
+    | '/api_/v1/auth/sudo'
     | '/api_/v1/kyc/status'
     | '/api_/v1/ledger/events'
     | '/api_/v1/pow/challenge'
@@ -5646,6 +5658,7 @@ export interface RootRouteChildren {
   ApiPublicYoutubePushRoute: typeof ApiPublicYoutubePushRoute
   ApiUserVaultExportRoute: typeof ApiUserVaultExportRoute
   ApiV1AgentVaultRoute: typeof ApiV1AgentVaultRoute
+  ApiV1AuthSudoRoute: typeof ApiV1AuthSudoRoute
   ApiV1KycStatusRoute: typeof ApiV1KycStatusRoute
   ApiV1LedgerEventsRoute: typeof ApiV1LedgerEventsRoute
   ApiV1PowChallengeRoute: typeof ApiV1PowChallengeRoute
@@ -8513,6 +8526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1AgentVaultRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/v1/auth/sudo': {
+      id: '/api_/v1/auth/sudo'
+      path: '/api/v1/auth/sudo'
+      fullPath: '/api/v1/auth/sudo'
+      preLoaderRoute: typeof ApiV1AuthSudoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/v1/kyc/status': {
       id: '/api_/v1/kyc/status'
       path: '/api/v1/kyc/status'
@@ -9615,6 +9635,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicYoutubePushRoute: ApiPublicYoutubePushRoute,
   ApiUserVaultExportRoute: ApiUserVaultExportRoute,
   ApiV1AgentVaultRoute: ApiV1AgentVaultRoute,
+  ApiV1AuthSudoRoute: ApiV1AuthSudoRoute,
   ApiV1KycStatusRoute: ApiV1KycStatusRoute,
   ApiV1LedgerEventsRoute: ApiV1LedgerEventsRoute,
   ApiV1PowChallengeRoute: ApiV1PowChallengeRoute,
