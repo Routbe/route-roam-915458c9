@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { DEFAULT_RULES, type PresenceRules } from "@/lib/custom-presence";
+import { withSudo } from "@/lib/auth/sudo-client";
 import { getCustomPresence, revokePresenceApiKey, rotatePresenceApiKey, savePresenceRules, setMyCustomStatus } from "@/lib/custom-presence.functions";
 import { i18n as trI18n } from "@/lib/i18n";
 
@@ -77,7 +78,7 @@ export function CustomPresencePanel() {
         )}
         {newKey && <p className="text-xs text-muted-foreground">Bewaar deze sleutel nu: je ziet hem maar één keer.</p>}
         <div className="flex gap-2">
-          <Button type="button" size="sm" variant="outline" onClick={async () => { try { const r = await rotate(); setNewKey(r.key); refresh(); } catch { toast.error(trI18n.t("ui.12f7bc2c65")); } }}>{q.data?.hasKey ? "Nieuwe sleutel" : "Sleutel aanmaken"}</Button>
+          <Button type="button" size="sm" variant="outline" onClick={async () => { try { const r = await withSudo(() => rotate()); setNewKey(r.key); refresh(); } catch { toast.error(trI18n.t("ui.12f7bc2c65")); } }}>{q.data?.hasKey ? "Nieuwe sleutel" : "Sleutel aanmaken"}</Button>
           {q.data?.hasKey && <Button type="button" size="sm" variant="ghost" onClick={() => { setNewKey(null); void run(() => revoke(), "Sleutel ingetrokken"); }}>Intrekken</Button>}
         </div>
       </Fold>

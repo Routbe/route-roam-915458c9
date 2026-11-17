@@ -1,4 +1,4 @@
-import { withStepUp } from "@/components/auth/StepUpDialog";
+import { withSudo } from "@/lib/auth/sudo-client";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";

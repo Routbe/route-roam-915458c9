@@ -4,6 +4,7 @@ import { TourHost } from "@/components/tour/TourHost";
 import { InAppBrowserBanner } from "@/components/pwa/InAppBrowserBanner";
 import { IosInstallHint } from "@/components/pwa/IosInstallHint";
 import { StepUpDialog } from "@/components/auth/StepUpDialog";
+import { SudoModal } from "@/components/auth/SudoModal";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -242,6 +243,7 @@ function RootComponent() {
             <Toaster />
             <Sonner />
             <StepUpDialog />
+            <SudoModal />
             <AuthProvider>
               <LanguageSync />
               <UiPreferenceAccountSync />
