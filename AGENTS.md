@@ -106,6 +106,9 @@ use the editor.
 ## Booking phases B–G
 - Phase B–G security rules live in src/lib/booking-engine/AGENTS.md and bind every booking, recovery and crypto change. Why: the owner's hard requirements stay in one scoped place.
 
+## ROUT Sign
+- ROUT Sign rules live in src/lib/sign/AGENTS.md. Why: document signing has its own zero-plaintext invariants.
+
 ## Server function guards
 - createServerFn exports need requireAuth/requireDeveloperAccess/optionalAuth or an entry in PUBLIC_SERVER_FNS (src/test/server-fn-auth-guard.test.ts). Why: route gates only hide UI.
 

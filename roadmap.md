@@ -409,3 +409,16 @@
 - [x] A1-backfill alleen-lezen gecontroleerd op Neon: 3 profielen met oude payment_method, overige velden 0, profile_field_keys en verified_identity_nullifiers leeg
 - [ ] A1-backfill echt draaien: ROUT_VAULT_KEK + DATABASE_URL op de eigen server, eerste veldsleutel laten registreren, dan `bun scripts/a1-backfill.ts` en `--apply` — eigenaar, met GO-nummer
 - [ ] Sudo Mode live doorklikken met een echte passkey — vraagt DATABASE_URL en BETTER_AUTH_SECRET in een omgeving
+
+## Opdracht eigenaar 2026-11-17 — Sovereign Identity OS, ROUT Sign, Developer Platform
+- [x] 0281 stond al live op Neon (2026-11-15); providerhub, cross-provider nullifier, workspace-vragen en badges bestonden al
+- [x] Vier scopes: sybil_proof (app_nullifier per app), real_human, age_gate:13–21 (app kiest één drempel), legal_identity (naam alleen na toestemming)
+- [x] Nieuwe apps en API-sleutels (ook via AI-agent) alleen met KYC-identiteit; bestaande apps blijven werken
+- [x] /console/docs: AI-prompts voor Lovable, Cursor en ChatGPT
+- [x] DNSSEC verplicht voor elke domeinverificatie (eigen domein, werkruimtedomein, domeinclaim)
+- [x] IBAN op steunpagina: Didit volstaat zonder naamcontrole; domeinroute houdt de naamcontrole (in 0290)
+- [x] ROUT Sign fase 1 (/sign, /sign/<id>): PDF-schoonmaker, versleuteld in de browser, verplichte inzage, ondertekenen met passkey — geen PAdES
+- [ ] 0290 op Neon zetten (klaar in db-pending/, getest op replay) — wacht op letterlijk "GO 0290"
+- [ ] PAdES-LTA via een gekwalificeerde dienst (QTSP) — later, eigenaar kiest de dienst
+- [ ] Leestijd wordt nu in de browser afgedwongen; server-side afdwingen vraagt een extra kolom (volgende migratie)
+
