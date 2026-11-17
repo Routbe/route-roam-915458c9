@@ -2066,7 +2066,7 @@
   "wsSupport.admin.loading": "Chargement de la page de soutien…",
   "wsSupport.admin.title": "Page de soutien de l’espace",
   "wsSupport.admin.intro": "Le soutien va directement sur le compte de l’espace, séparé du compte personnel du fondateur. ROUT ne traite pas d’argent.",
-  "wsSupport.admin.eligibleDidit": "Disponible : le propriétaire a terminé une vérification d’identité Didit. Le titulaire du compte doit être au nom du propriétaire.",
+  "wsSupport.admin.eligibleDidit": "Disponible : le propriétaire dispose d’une attestation d’identité KYC (Didit). Saisissez le nom du titulaire tel qu’il figure sur le compte ; il est affiché sur la page de soutien.",
   "wsSupport.admin.eligibleDomain": "Disponible : cet espace a un domaine d’entreprise vérifié. Le titulaire doit être le nom de l’espace ou le nom de facturation.",
   "wsSupport.admin.notEligible": "Pas encore disponible. Le propriétaire doit terminer une vérification Didit, ou l’espace doit avoir un domaine d’entreprise vérifié.",
   "wsSupport.admin.enable": "Afficher la page de soutien",

@@ -2066,7 +2066,7 @@
   "wsSupport.admin.loading": "Steunpagina laden…",
   "wsSupport.admin.title": "Steunpagina van de werkruimte",
   "wsSupport.admin.intro": "Steun komt rechtstreeks op de rekening van de werkruimte, los van de persoonlijke rekening van de oprichter. ROUT verwerkt geen geld.",
-  "wsSupport.admin.eligibleDidit": "Beschikbaar: de eigenaar heeft een voltooide Didit-identiteitscheck. De rekeninghouder moet de naam van de eigenaar zijn.",
+  "wsSupport.admin.eligibleDidit": "Beschikbaar: de eigenaar heeft een KYC-identiteitsattestatie (Didit). Vul de naam van de rekeninghouder in zoals op je bankrekening; die wordt op de steunpagina getoond.",
   "wsSupport.admin.eligibleDomain": "Beschikbaar: deze werkruimte heeft een geverifieerd bedrijfsdomein. De rekeninghouder moet de naam van de werkruimte of de facturatienaam zijn.",
   "wsSupport.admin.notEligible": "Nog niet beschikbaar. De eigenaar moet een Didit-identiteitscheck voltooien, of de werkruimte moet een geverifieerd bedrijfsdomein hebben.",
   "wsSupport.admin.enable": "Steunpagina tonen",

@@ -2066,7 +2066,7 @@
   "wsSupport.admin.loading": "Unterstützungsseite wird geladen…",
   "wsSupport.admin.title": "Unterstützungsseite des Arbeitsbereichs",
   "wsSupport.admin.intro": "Unterstützung geht direkt auf das Konto des Arbeitsbereichs, getrennt vom persönlichen Konto des Gründers. ROUT wickelt kein Geld ab.",
-  "wsSupport.admin.eligibleDidit": "Verfügbar: Der Inhaber hat eine abgeschlossene Didit-Identitätsprüfung. Kontoinhaber muss der Name des Inhabers sein.",
+  "wsSupport.admin.eligibleDidit": "Verfügbar: Der Inhaber hat eine KYC-Identitätsbestätigung (Didit). Gib den Namen des Kontoinhabers wie auf dem Bankkonto ein; er wird auf der Unterstützungsseite angezeigt.",
   "wsSupport.admin.eligibleDomain": "Verfügbar: Dieser Arbeitsbereich hat eine verifizierte Firmendomain. Kontoinhaber muss der Name des Arbeitsbereichs oder der Rechnungsname sein.",
   "wsSupport.admin.notEligible": "Noch nicht verfügbar. Der Inhaber muss eine Didit-Prüfung abschließen, oder der Arbeitsbereich braucht eine verifizierte Firmendomain.",
   "wsSupport.admin.enable": "Unterstützungsseite anzeigen",

@@ -2066,7 +2066,7 @@
   "wsSupport.admin.loading": "Loading support page…",
   "wsSupport.admin.title": "Workspace support page",
   "wsSupport.admin.intro": "Support goes straight to the workspace's own account, separate from the founder's personal account. ROUT handles no money.",
-  "wsSupport.admin.eligibleDidit": "Available: the owner has a completed Didit identity check. The account holder must be the owner's name.",
+  "wsSupport.admin.eligibleDidit": "Available: the owner holds a KYC identity attestation (Didit). Enter the account holder's name as it appears on the bank account; it is shown on the support page.",
   "wsSupport.admin.eligibleDomain": "Available: this workspace has a verified business domain. The account holder must be the workspace name or billing name.",
   "wsSupport.admin.notEligible": "Not available yet. The owner must complete a Didit identity check, or the workspace needs a verified business domain.",
   "wsSupport.admin.enable": "Show support page",
