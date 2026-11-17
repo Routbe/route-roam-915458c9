@@ -3,7 +3,7 @@ import { AGE_GATE_SCOPES, ageGateMin, appNullifier, identityOsClaims } from "./i
 import { SUPPORTED_SCOPES, OPTIONAL_SCOPES, validateRequestedScopes } from "./scope-rules";
 
 const ROOT = "a".repeat(64);
-const none = { legalIdentity: false, realHuman: false, ageFloor: null, rootNullifier: null, legalName: null };
+const none = { legalIdentity: false, realHuman: false, ageVector: null, rootNullifier: null, legalName: null };
 
 describe("age gate scopes", () => {
   it("cover exactly 13..21", () => {
@@ -38,7 +38,7 @@ describe("appNullifier", () => {
 describe("identityOsClaims", () => {
   it("answers each granted scope and nothing else", () => {
     const r = identityOsClaims(["openid", "sybil_proof", "age_gate:18", "real_human", "legal_identity"], "app-1",
-      { legalIdentity: true, realHuman: false, ageFloor: 19, rootNullifier: ROOT, legalName: null });
+      { legalIdentity: true, realHuman: false, ageVector: 127, rootNullifier: ROOT, legalName: null });
     expect(r.claims).toEqual({ sybil_proof: true, app_nullifier: appNullifier(ROOT, "app-1"), age_over_18: true, is_real_human: false, has_legal_identity: true });
     expect(r.disclosed.sort()).toEqual(["age_gate:18", "legal_identity", "real_human", "sybil_proof"]);
     expect(identityOsClaims(["openid", "profile"], "app-1", none)).toEqual({ claims: {}, disclosed: [] });

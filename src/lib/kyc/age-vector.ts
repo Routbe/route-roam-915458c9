@@ -58,3 +58,17 @@ export function ageGatePasses(vector: number | null | undefined, min: number): b
   if (i < 0 || !isValidVector(vector)) return false;
   return (vector & (1 << i)) !== 0;
 }
+
+/** Bridge for the pending db/0290 `age_floor` column (whole years, capped at 21). */
+export function ageVectorFromFloor(floor: number): number {
+  if (!Number.isInteger(floor) || floor < AGE_GATE_MIN) return 0;
+  return (1 << (Math.min(floor, AGE_GATE_MAX) - AGE_GATE_MIN + 1)) - 1;
+}
+
+/** Inverse bridge: the floor a vector proves (12 = under 13), or null without a vector. */
+export function ageFloorFromVector(vector: number | null | undefined): number | null {
+  if (!isValidVector(vector)) return null;
+  let bits = 0;
+  for (let v = vector; v; v >>= 1) bits++;
+  return AGE_GATE_MIN - 1 + bits;
+}

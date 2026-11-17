@@ -6,6 +6,7 @@
  * and age_gate answer false (fail closed).
  */
 import type { IdentityOsInput } from "./identity-os-scopes";
+import { ageVectorFromFloor } from "@/lib/kyc/age-vector";
 
 export async function readIdentityOsInput(userId: string, legalName: IdentityOsInput["legalName"]): Promise<IdentityOsInput> {
   const { hasSchemaFeature } = await import("@/lib/schema-features.server");
@@ -19,7 +20,7 @@ export async function readIdentityOsInput(userId: string, legalName: IdentityOsI
       return {
         legalIdentity: row["has_legal_identity"] === true,
         realHuman: row["is_real_human"] === true,
-        ageFloor: typeof age === "number" ? age : null,
+        ageVector: typeof age === "number" ? ageVectorFromFloor(age) : null,
         rootNullifier: typeof row["root_nullifier"] === "string" ? (row["root_nullifier"] as string) : null,
         legalName,
       };
@@ -27,5 +28,5 @@ export async function readIdentityOsInput(userId: string, legalName: IdentityOsI
   }
   const { readPublicIdentity } = await import("@/lib/identity/public-identity.server");
   const pub = await readPublicIdentity(userId);
-  return { legalIdentity: pub.diditVerified, realHuman: pub.realHuman, ageFloor: null, rootNullifier: null, legalName };
+  return { legalIdentity: pub.diditVerified, realHuman: pub.realHuman, ageVector: null, rootNullifier: null, legalName };
 }

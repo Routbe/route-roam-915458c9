@@ -11,9 +11,9 @@
  *                   Off by default on the consent screen: the member must tick it.
  */
 import { blake3 } from "@noble/hashes/blake3.js";
-import { ageGatePasses, AGE_FLOOR_CAP, AGE_GATE_MIN } from "@/lib/kyc/age-floor";
+import { ageGatePasses, AGE_GATE_MAX, AGE_GATE_MIN } from "@/lib/kyc/age-vector";
 
-export const AGE_GATE_SCOPES = Array.from({ length: AGE_FLOOR_CAP - AGE_GATE_MIN + 1 }, (_, i) => `age_gate:${AGE_GATE_MIN + i}`);
+export const AGE_GATE_SCOPES = Array.from({ length: AGE_GATE_MAX - AGE_GATE_MIN + 1 }, (_, i) => `age_gate:${AGE_GATE_MIN + i}`);
 export const IDENTITY_OS_SCOPES: readonly string[] = ["sybil_proof", "real_human", "legal_identity", ...AGE_GATE_SCOPES];
 
 /** The minimum age of an age_gate:N scope, or null for any other string. */
@@ -21,7 +21,7 @@ export function ageGateMin(scope: string): number | null {
   const m = /^age_gate:(\d{2})$/.exec(scope);
   if (!m) return null;
   const n = Number(m[1]);
-  return n >= AGE_GATE_MIN && n <= AGE_FLOOR_CAP ? n : null;
+  return n >= AGE_GATE_MIN && n <= AGE_GATE_MAX ? n : null;
 }
 
 const HEX64 = /^[0-9a-f]{64}$/;
@@ -37,7 +37,8 @@ export function appNullifier(universalNullifier: string, clientId: string): stri
 export type IdentityOsInput = {
   legalIdentity: boolean;
   realHuman: boolean;
-  ageFloor: number | null;
+  /** Age-threshold vector (kyc/age-vector.ts); null without a KYC attestation. */
+  ageVector: number | null;
   /** The member's primary universal nullifier; null without a KYC attestation (or before db/0290). */
   rootNullifier: string | null;
   legalName: { first_name: string | null; last_name: string | null; full_legal_name: string | null } | null;
@@ -60,7 +61,7 @@ export function identityOsClaims(granted: readonly string[], clientId: string, i
   for (const scope of granted) {
     const min = ageGateMin(scope);
     if (min === null) continue;
-    claims[`age_over_${min}`] = ageGatePasses(input.ageFloor, min);
+    claims[`age_over_${min}`] = ageGatePasses(input.ageVector, min);
     disclosed.push(scope);
   }
   if (granted.includes("legal_identity")) {

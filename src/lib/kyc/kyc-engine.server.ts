@@ -109,7 +109,7 @@ export async function attestDidit(input: {
   kinds: readonly CanonicalAnchor["kind"][];
   isRealHuman: boolean;
   jurisdiction: string;
-  /** Capped age in whole years (age-floor.ts), recorded only from db/0290 on. */
+  /** Capped age in whole years (derived from the age vector, kyc/age-vector.ts), recorded only from db/0290 on. */
   ageFloor?: number | null;
 }): Promise<AttestResult> {
   const { sql } = await import("@/lib/neon");
@@ -282,7 +282,7 @@ async function approve(member: { userId: string; state: string }, sessionId: str
       kinds,
       isRealHuman: reading.isRealHuman,
       jurisdiction: reading.jurisdiction,
-      ageFloor: reading.ageFloor,
+      ageFloor: ageFloorFromVector(reading.ageVector),
     });
   } finally {
     wipeAnchors(anchors);
