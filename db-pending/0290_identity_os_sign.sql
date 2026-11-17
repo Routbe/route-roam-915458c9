@@ -67,7 +67,7 @@ begin
       from rows from (pg_catalog.unnest(p_nullifiers), pg_catalog.unnest(p_anchor_kinds)) as a(nf, kind)
   -- A later attestation of the same member may only raise the recorded age floor.
   on conflict (universal_nullifier) do update
-     set age_floor = pg_catalog.greatest(t.age_floor, excluded.age_floor)
+     set age_floor = greatest(t.age_floor, excluded.age_floor)
    where t.user_id = v_user and excluded.age_floor is not null;
   return 'ok';
 end
