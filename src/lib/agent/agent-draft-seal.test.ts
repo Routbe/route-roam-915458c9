@@ -112,6 +112,8 @@ vi.mock("@/lib/neon", () => {
   };
   return { sql: run, withDbContext: async (_ctx: unknown, fn: () => unknown) => fn() };
 });
+// The claiming member holds a KYC legal identity; the gate itself is tested in legal-identity-gate tests.
+vi.mock("@/lib/oauth/legal-identity-gate.server", () => ({ hasDeveloperLegalIdentity: vi.fn(async () => true) }));
 vi.mock("@/lib/oauth/provider.server", () => ({
   createClient: vi.fn(async (_u: string, input: { name: string }) => ({ client: { name: input.name, clientId: "cid_1" }, clientSecret: "sec_1" })),
 }));
