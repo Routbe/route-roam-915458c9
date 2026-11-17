@@ -73,7 +73,7 @@ function findStreams(s: string): StreamObj[] {
 async function inflate(data: Uint8Array): Promise<Uint8Array | null> {
   try {
     const ds = new DecompressionStream("deflate");
-    const stream = new ReadableStream<Uint8Array>({
+    const stream = new ReadableStream<BufferSource>({
       start(c) {
         c.enqueue(data);
         c.close();

@@ -83,17 +83,19 @@ export async function revokeSignRequest(userId: string, id: string): Promise<boo
  * Records the passkey-confirmed signature (the caller already passed Sudo Mode). The binding is
  * computed here from the member's own universal nullifier, which never leaves this function.
  */
+export type SignOutcome = "ok" | "no_legal_identity" | "not_found" | "not_open" | "expired" | "source_changed" | "invalid_input";
+
 export async function recordSignature(
   userId: string,
   input: { id: string; sourceSha256: string; digest: string; signedEnvelope: Uint8Array },
-): Promise<"ok" | "no_legal_identity" | "not_found" | "not_open" | "expired" | "source_changed" | "invalid_input"> {
-  return asMember(userId, async (sql) => {
+): Promise<SignOutcome> {
+  return asMember(userId, async (sql): Promise<SignOutcome> => {
     const claims = ((await sql`select has_legal_identity, root_nullifier from public.rout_my_identity_claims()`) as Record<string, unknown>[])[0];
     const nullifier = claims?.["root_nullifier"];
-    if (claims?.["has_legal_identity"] !== true || typeof nullifier !== "string") return "no_legal_identity";
+    if (claims?.["has_legal_identity"] !== true || typeof nullifier !== "string") return "no_legal_identity" as const;
     const binding = signerBinding(nullifier, input.id, input.digest);
     const rows = (await sql`select public.rout_sign_request_mark_signed(${input.id}::uuid, ${input.sourceSha256}, ${binding}, ${input.digest}, ${Buffer.from(input.signedEnvelope)}) as r`) as { r: string }[];
-    return (rows[0]?.r ?? "invalid_input") as never;
+    return (rows[0]?.r ?? "invalid_input") as SignOutcome;
   });
 }
 

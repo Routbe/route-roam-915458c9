@@ -5,7 +5,7 @@ const enc = (s: string) => Uint8Array.from(s, (c) => c.charCodeAt(0) & 0xff);
 const dec = (b: Uint8Array) => Array.from(b, (x) => String.fromCharCode(x)).join("");
 
 async function deflate(text: string): Promise<string> {
-  const src = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(enc(text)); c.close(); } });
+  const src = new ReadableStream<BufferSource>({ start(c) { c.enqueue(enc(text)); c.close(); } });
   const cs = src.pipeThrough(new CompressionStream("deflate"));
   return dec(new Uint8Array(await new Response(cs).arrayBuffer()));
 }
