@@ -94,6 +94,21 @@ describe("cryptographic enclave", () => {
     expect(await open(dk.key, sealed.encrypted, workspaceConfigAad(userId))).toEqual(config);
   });
 
+  it("seals a ROUT Sign PDF under a fresh link key and wipes both inputs", async () => {
+    const pdf = new TextEncoder().encode("%PDF-1.7 contract");
+    const { envelope, key } = await call("sign.seal", { pdf });
+    expect(pdf.every((x) => x === 0)).toBe(true);
+    expect(key.length).toBe(32);
+    const linkKey = key.slice();
+    const back = await call("sign.open", { key: linkKey, envelope: envelope.slice(), role: "original" });
+    expect(new TextDecoder().decode(back.plaintext)).toBe("%PDF-1.7 contract");
+    expect(linkKey.every((x) => x === 0)).toBe(true);
+    expect(await code("sign.open", { key: key.slice(), envelope: envelope.slice(), role: "signed" })).toBe("decrypt_failed");
+    expect(await code("sign.open", { key: key.slice(), envelope: envelope.slice(), role: "other" as never })).toBe("invalid_input");
+    // Not a real PDF: the sanitizer refuses it, so no signed copy is ever produced.
+    expect(await code("sign.attest", { key: key.slice(), envelope: envelope.slice() })).toBe("invalid_input");
+  });
+
   it("seals UI plaintext and wipes the transferred input", async () => {
     const plaintext = new TextEncoder().encode(JSON.stringify({ note: "hello" }));
     const sealed = await call("data.seal", { userId, aad: "test:aad", plaintext });

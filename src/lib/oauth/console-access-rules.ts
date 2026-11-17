@@ -25,3 +25,16 @@ export function canUseDeveloperConsole(input: ConsoleAccessInput | null | undefi
     input.isAdmin === true
   );
 }
+
+/**
+ * Creating new OAuth clients or API keys needs a KYC legal identity (the blue "KYC Attested" mark,
+ * public-identity.server.ts). Pro, early-believer, an approved handle or admin rights never suffice,
+ * and a banned or suspended member never qualifies. Existing apps and keys keep working.
+ */
+export function canIssueDeveloperCredentials(input: { legalIdentity?: boolean | null; isBanned?: boolean | null; isSuspended?: boolean | null } | null | undefined): boolean {
+  if (!input) return false;
+  if (input.isBanned === true || input.isSuspended === true) return false;
+  return input.legalIdentity === true;
+}
+
+export const LEGAL_IDENTITY_REQUIRED = "LEGAL_IDENTITY_REQUIRED";

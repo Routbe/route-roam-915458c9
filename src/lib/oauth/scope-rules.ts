@@ -1,11 +1,12 @@
 /** Selective-disclosure scopes for "Login met ROUT". Pure and browser-safe. */
 import { AGENT_SCOPES } from "@/lib/agent/agent-scopes";
+import { IDENTITY_OS_SCOPES } from "./identity-os-scopes";
 
 export const IDENTITY_SCOPES = ["sybil:verify", "profile:read", "identity:legal_name", "identity:national_id"] as const;
 export type IdentityScope = (typeof IDENTITY_SCOPES)[number];
 
 /** Scopes the member can switch off on the consent screen (openid never). */
-export const OPTIONAL_SCOPES: readonly string[] = ["accounts:merge", "identity:handle_reservation", "sybil:verify", "profile:read", "identity:legal_name", "identity:national_id", ...AGENT_SCOPES];
+export const OPTIONAL_SCOPES: readonly string[] = ["accounts:merge", "identity:handle_reservation", "sybil:verify", "profile:read", "identity:legal_name", "identity:national_id", ...AGENT_SCOPES, ...IDENTITY_OS_SCOPES];
 
 /** Scopes whose disclosure is written to identity_disclosure_logs. */
 export const SENSITIVE_SCOPES: readonly string[] = ["sybil:verify", "identity:legal_name", "identity:national_id"];
@@ -75,6 +76,8 @@ export const SUPPORTED_SCOPES = [
   "identity:handle_reservation",
   // Agent scopes: human-delegated, short-lived tokens only (src/lib/agent/agent-scopes.ts).
   ...AGENT_SCOPES,
+  // Sovereign Identity OS: sybil_proof, real_human, legal_identity, age_gate:13..21 (identity-os-scopes.ts).
+  ...IDENTITY_OS_SCOPES,
 ] as const;
 export type SupportedScope = (typeof SUPPORTED_SCOPES)[number];
 

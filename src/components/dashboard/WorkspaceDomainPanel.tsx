@@ -48,6 +48,8 @@ export function WorkspaceDomainPanel({ workspaceId, onVerified }: { workspaceId:
         toast.success("Domein geverifieerd — je hub is live op rout.be/" + (domain?.name ?? ""));
         void qc.invalidateQueries({ queryKey: ["workspace-domain", workspaceId] });
         onVerified?.();
+      } else if (res.dnssecMissing) {
+        toast.error("Het TXT-record staat er, maar je domein is niet met DNSSEC ondertekend. Zet DNSSEC aan bij je registrar en probeer opnieuw.");
       } else {
         toast.error(trI18n.t("ui.a47b18c573"));
       }

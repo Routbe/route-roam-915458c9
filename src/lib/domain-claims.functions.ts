@@ -10,6 +10,7 @@ const MESSAGES: Record<string, string> = {
   domain_claimed: "Dit domein wordt al door een ander account geclaimd.",
   handle_claimed: "Deze handle is al via een ander domein geclaimd.",
   record_missing: "We vinden het TXT-record nog niet. DNS-wijzigingen kunnen tot een uur duren.",
+  dnssec_missing: "Het TXT-record staat er, maar je domein is niet met DNSSEC ondertekend. Zet DNSSEC aan bij je registrar en probeer opnieuw.",
   dns_claims_not_configured: "Domeinverificatie is nog niet geconfigureerd.",
   not_found: "Deze claim bestaat niet (meer).",
 };

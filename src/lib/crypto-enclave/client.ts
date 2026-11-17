@@ -269,6 +269,15 @@ export const enclave = {
       callEnclave("pq_ratchet.ratchet_decrypt", { userId, sessionId, envelope: envelope.slice() }),
     close: (userId: string, sessionId: string) => callEnclave("pq_ratchet.close_session", { userId, sessionId }),
   },
+  sign: {
+    /** ROUT Sign: the PDF is transferred (the caller's copy is emptied); returns the RSG1 envelope and the link key. */
+    seal: (pdf: Uint8Array) => callEnclave("sign.seal", { pdf }, moved(pdf)),
+    /** The link key is transferred and wiped in the worker; the plaintext PDF comes back. */
+    open: (key: Uint8Array, envelope: Uint8Array, role: "original" | "signed") =>
+      callEnclave("sign.open", { key, envelope: envelope.slice(), role }, moved(key)),
+    /** The link key is transferred and wiped; returns hashes and the sealed "signed" copy only. */
+    attest: (key: Uint8Array, envelope: Uint8Array) => callEnclave("sign.attest", { key, envelope: envelope.slice() }, moved(key)),
+  },
   guestVault: {
     /** Passkey output → worker (transferred: the caller's copies are emptied). Use guest-passkey.ts to obtain it. */
     unlock: (input: { credentialId: string; prf?: Uint8Array; signatures?: Uint8Array[] }) =>

@@ -376,5 +376,9 @@
   "secure.pw.accountRowBody": "Optional. Your password never leaves your device (OPAQUE). Setting, changing or removing it asks for your passkey.",
   "secure.pw.accountRowCta": "Manage",
   "auth.pw.signupWithPassword": "Prefer a password? Create your account with a password",
-  "auth.pw.resetGone": "Passwords are no longer set by email. Sign in with your passkey or an email link, then set a password from your account."
+  "auth.pw.resetGone": "Passwords are no longer set by email. Sign in with your passkey or an email link, then set a password from your account.",
+  "auth.scope.sybilProof": "An anonymous proof that you are one real human, valid only at {{app}} — apps cannot recognise you across each other",
+  "auth.scope.realHuman": "Only whether a zero-knowledge proof confirmed you as a real human (yes/no)",
+  "auth.scope.ageGate": "Only whether you are at least {{age}} (yes/no), never your date of birth",
+  "auth.scope.legalIdentity": "Whether your legal identity is verified, and your legal name if ROUT holds it — only if you tick this"
 }

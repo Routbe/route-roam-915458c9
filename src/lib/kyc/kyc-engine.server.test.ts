@@ -176,7 +176,7 @@ describe("Didit webhook", () => {
     expect(nullifiers).toHaveLength(2);
     for (const n of nullifiers) expect(n).toMatch(/^[0-9a-f]{64}$/);
     expect(attest.params[1]).toEqual(["personal_number", "document"]);
-    expect(attest.params.slice(2)).toEqual([true, "ESP"]);
+    expect(attest.params.slice(2)).toEqual([true, "ESP", 21]);
     expect(attest.userId).toBe(USER);
 
     const flat = JSON.stringify(db.calls) + JSON.stringify(body) + logs.join("\n");

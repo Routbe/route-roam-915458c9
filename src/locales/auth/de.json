@@ -376,5 +376,9 @@
   "secure.pw.accountRowBody": "Optional. Ihr Passwort verlässt nie Ihr Gerät (OPAQUE). Festlegen, Ändern oder Entfernen erfordert Ihren Passkey.",
   "secure.pw.accountRowCta": "Verwalten",
   "auth.pw.signupWithPassword": "Lieber ein Passwort? Konto mit Passwort erstellen",
-  "auth.pw.resetGone": "Passwörter werden nicht mehr per E-Mail festgelegt. Melden Sie sich mit Ihrem Passkey oder einem E-Mail-Link an und legen Sie dann in Ihrem Konto ein Passwort fest."
+  "auth.pw.resetGone": "Passwörter werden nicht mehr per E-Mail festgelegt. Melden Sie sich mit Ihrem Passkey oder einem E-Mail-Link an und legen Sie dann in Ihrem Konto ein Passwort fest.",
+  "auth.scope.sybilProof": "Ein anonymer Nachweis, dass du ein echter Mensch bist, nur gültig bei {{app}} — Apps können dich untereinander nicht wiedererkennen",
+  "auth.scope.realHuman": "Nur ob ein Zero-Knowledge-Nachweis dich als echten Menschen bestätigt hat (ja/nein)",
+  "auth.scope.ageGate": "Nur ob du mindestens {{age}} Jahre alt bist (ja/nein), nie dein Geburtsdatum",
+  "auth.scope.legalIdentity": "Ob deine rechtliche Identität geprüft ist, und dein rechtlicher Name, falls ROUT ihn speichert — nur wenn du das ankreuzt"
 }

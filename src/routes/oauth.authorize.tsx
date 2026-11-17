@@ -7,8 +7,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { RoutLogo } from "@/components/RoutLogo";
-import { AtSign, BadgeCheck, Bot, Check, Eye, Fingerprint, IdCard, KeyRound, Loader2, Lock, Mail, PenLine, QrCode, ShieldCheck, User } from "lucide-react";
+import { AtSign, BadgeCheck, Bot, CalendarCheck, Check, Eye, Fingerprint, IdCard, KeyRound, Loader2, Lock, Mail, PenLine, QrCode, ShieldCheck, User } from "lucide-react";
 import { OPTIONAL_SCOPES, consentDelta } from "@/lib/oauth/scope-rules";
+import { ageGateMin } from "@/lib/oauth/identity-os-scopes";
 import { BHM_PARAM, BHM_SCOPE, parseBlindHashes, type BhmIdentity } from "@/lib/oauth/blind-hash";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -100,7 +101,16 @@ const SCOPE_TEXT: Record<string, { icon: typeof User; text: string }> = {
   "assets:write": { icon: QrCode, text: "auth.scope.agentAssets" },
   "profile:draft": { icon: PenLine, text: "auth.scope.agentDraft" },
   "identity:read_public": { icon: Bot, text: "auth.scope.agentIdentity" },
+  sybil_proof: { icon: Fingerprint, text: "auth.scope.sybilProof" },
+  real_human: { icon: ShieldCheck, text: "auth.scope.realHuman" },
+  legal_identity: { icon: IdCard, text: "auth.scope.legalIdentity" },
 };
+
+/** Text for a scope, including the age_gate:N family. */
+function scopeItem(scope: string): { icon: typeof User; text: string; age?: number } | undefined {
+  const min = ageGateMin(scope);
+  return min === null ? SCOPE_TEXT[scope] : { icon: CalendarCheck, text: "auth.scope.ageGate", age: min };
+}
 
 const PROVIDER_LABEL: Record<string, string> = {
   google: "Google",
@@ -133,7 +143,7 @@ function AuthorizePage() {
   const [richOptIn, setRichOptIn] = useState(false);
   const [emailChoice, setEmailChoice] = useState<string | null>(null);
   // Optional identity scopes start off for legal data, on for the rest.
-  const [declined, setDeclined] = useState<string[]>(["identity:legal_name"]);
+  const [declined, setDeclined] = useState<string[]>(["identity:legal_name", "legal_identity"]);
   const [codeSentTo, setCodeSentTo] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState<string | null>(null);
@@ -476,15 +486,15 @@ function AuthorizePage() {
         <p className="mt-6 text-sm">{incremental ? t("auth.consent.incremental", { app: appName }) : t(scopes.some((scope) => scope !== "openid") ? "auth.consent.summary" : "auth.consent.identityOnly")}</p>
         <ul className="mt-3 space-y-2">
           {shownScopes.map((scope) => {
-            const item = SCOPE_TEXT[scope];
+            const item = scopeItem(scope);
             const Icon = item?.icon ?? ShieldCheck;
             return (
               <li key={scope} className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Icon className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
-                <span className="flex-1">{item ? t(item.text, { app: appName }) : scope}</span>
+                <span className="flex-1">{item ? t(item.text, { app: appName, age: item.age }) : scope}</span>
                 {OPTIONAL_SCOPES.includes(scope) && scope !== "identity:national_id" && (
                   <Checkbox
-                    aria-label={item ? t(item.text, { app: appName }) : scope}
+                    aria-label={item ? t(item.text, { app: appName, age: item.age }) : scope}
                     checked={!declined.includes(scope)}
                     onCheckedChange={(v) => setDeclined((d) => (v ? d.filter((x) => x !== scope) : [...d, scope]))}
                   />

@@ -440,20 +440,23 @@ export const verifyWorkspaceDomain = createServerFn({ method: "POST" })
     const { sql } = await import("@/lib/neon");
     const { getWorkspaceRole } = await import("./workspaces.server");
     const { claimRecordName, claimRecordValue } = await import("./domain-claim-rules");
-    const { query } = await import("./domains.server");
+    const { queryWithDnssec } = await import("./domains.server");
     if (!canManageTeam(await getWorkspaceRole(context.userId, data.workspaceId))) throw new Error("Alleen eigenaars en admins beheren domeinen.");
     const row = ((await sql`select domain from public.workspaces where id = ${data.workspaceId}`) as { domain: string | null }[])[0];
     if (!row?.domain) throw new Error("Koppel eerst een domein.");
     const expected = await claimRecordValue(workspaceDomainKey(), data.workspaceId, row.domain);
-    const records = await query(claimRecordName(row.domain), "TXT");
-    const ok = records.some((r) => r.replace(/"\s*"/g, "") === expected);
+    const answer = await queryWithDnssec(claimRecordName(row.domain), "TXT");
+    const found = answer.records.some((r) => r.replace(/"\s*"/g, "") === expected);
+    // Every domain verification needs a DNSSEC-validated answer (domains.server.ts).
+    const ok = found && answer.dnssec;
+    if (found && !answer.dnssec) return { verified: false, dnssecMissing: true };
     if (ok) {
       await sql`update public.workspaces set domain_verified_at = now() where id = ${data.workspaceId}`;
       // Chronos: agents waiting on DNS verification resume automatically.
       const { emitAgentWebhook } = await import("./agent/chronos.server");
       await emitAgentWebhook(data.workspaceId, "domain.verified");
     }
-    return { verified: ok };
+    return { verified: ok, dnssecMissing: false };
   });
 
 /** Deletes the workspace. Owner only, after typing the exact name; FKs cascade members, invites and assets. */

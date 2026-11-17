@@ -16,17 +16,36 @@ interface DohAnswer {
   data: string;
 }
 
-export async function query(name: string, type: "TXT" | "CNAME" | "A"): Promise<string[]> {
-  const res = await fetch(`${DOH}?name=${encodeURIComponent(name)}&type=${type}`, {
+export type DnsAnswer = { records: string[]; dnssec: boolean };
+
+/**
+ * DNS-over-HTTPS lookup with DNSSEC: `dnssec` is the resolver's AD (authenticated data) bit, set only
+ * when the whole chain from the root validated. Every domain verification requires it (owner
+ * decision 2026-11-17), so a spoofed or unsigned answer can never prove ownership.
+ */
+export async function queryWithDnssec(name: string, type: "TXT" | "CNAME" | "A"): Promise<DnsAnswer> {
+  const res = await fetch(`${DOH}?name=${encodeURIComponent(name)}&type=${type}&do=1`, {
     headers: { accept: "application/dns-json" },
   });
   if (!res.ok) throw new Error(`DNS lookup failed (${res.status})`);
-  const body = (await res.json()) as { Answer?: DohAnswer[] };
+  const body = (await res.json()) as { AD?: boolean; Status?: number; Answer?: DohAnswer[] };
+  return { records: dohRecords(body), dnssec: body.AD === true && body.Status === 0 };
+}
+
+/** Records of a DoH JSON answer, quotes stripped. */
+export function dohRecords(body: { Answer?: DohAnswer[] }): string[] {
   return (body.Answer ?? []).map((a) => a.data.replace(/^"|"$/g, "").trim());
 }
 
+export async function query(name: string, type: "TXT" | "CNAME" | "A"): Promise<string[]> {
+  return (await queryWithDnssec(name, type)).records;
+}
+
 export interface DnsCheck {
+  /** Ownership record present AND DNSSEC-validated. */
   txtFound: boolean;
+  /** The record is there but the zone is not DNSSEC-signed (or did not validate). */
+  dnssecMissing: boolean;
   cnameFound: boolean;
   txtRecords: string[];
   targetRecords: string[];
@@ -42,17 +61,20 @@ export async function checkDomainDns(
   cnameTarget: string,
   aTarget: string,
 ): Promise<DnsCheck> {
-  const [txt, cname, a] = await Promise.all([
-    query(`_rout.${domain}`, "TXT").catch(() => [] as string[]),
+  const [txtAnswer, cname, a] = await Promise.all([
+    queryWithDnssec(`_rout.${domain}`, "TXT").catch(() => ({ records: [] as string[], dnssec: false })),
     query(domain, "CNAME").catch(() => [] as string[]),
     query(domain, "A").catch(() => [] as string[]),
   ]);
 
+  const txt = txtAnswer.records;
+  const txtMatch = txt.some((v) => v === token || v === `rout-verify=${token}`);
   const normalize = (v: string) => v.replace(/\.$/, "").toLowerCase();
   const targetRecords = [...cname, ...a];
 
   return {
-    txtFound: txt.some((v) => v === token || v === `rout-verify=${token}`),
+    txtFound: txtMatch && txtAnswer.dnssec,
+    dnssecMissing: txtMatch && !txtAnswer.dnssec,
     cnameFound:
       cname.some((v) => normalize(v) === normalize(cnameTarget)) || a.some((v) => v === aTarget),
     txtRecords: txt,

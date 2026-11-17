@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import {
   ArrowLeft,
+  Sparkles,
   Blocks,
   Database,
   Terminal,
@@ -39,6 +40,7 @@ const GLOBAL_NAV = [
   { to: "/console/api", label: "API & Webhooks", icon: Webhook, exact: false },
   { to: "/console/connectors", label: "AI Connectors (MCP)", icon: Bot, exact: false },
   { to: "/console/billing", label: "Billing", icon: ReceiptText, exact: false },
+  { to: "/console/docs", label: "AI-prompts", icon: Sparkles, exact: false },
   { to: "/developers", label: "Documentatie", icon: BookOpen, exact: false },
 ] as const;
 

@@ -213,6 +213,7 @@ import { Route as SafetyTermsRouteImport } from './routes/safety.terms'
 import { Route as SafetyTransparencyRouteImport } from './routes/safety.transparency'
 import { Route as SafetyZeroKnowledgeRouteImport } from './routes/safety.zero-knowledge'
 import { Route as SecurePasswordRouteImport } from './routes/secure.password'
+import { Route as SignRequestIdRouteImport } from './routes/sign.$requestId'
 import { Route as SolutionsIndexRouteImport } from './routes/solutions.index'
 import { Route as SolutionsAgenciesRouteImport } from './routes/solutions.agencies'
 import { Route as SolutionsCreatorsRouteImport } from './routes/solutions.creators'
@@ -253,6 +254,7 @@ import { Route as AuthenticatedConsoleApiRouteImport } from './routes/_authentic
 import { Route as AuthenticatedConsoleAppsRouteImport } from './routes/_authenticated/console.apps'
 import { Route as AuthenticatedConsoleBillingRouteImport } from './routes/_authenticated/console.billing'
 import { Route as AuthenticatedConsoleConnectorsRouteImport } from './routes/_authenticated/console.connectors'
+import { Route as AuthenticatedConsoleDocsRouteImport } from './routes/_authenticated/console.docs'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardAssetsRouteImport } from './routes/_authenticated/dashboard.assets'
 import { Route as AuthenticatedDashboardBlueskyRouteImport } from './routes/_authenticated/dashboard.bluesky'
@@ -262,6 +264,7 @@ import { Route as AuthenticatedDashboardLinksRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardQrRouteImport } from './routes/_authenticated/dashboard.qr'
 import { Route as AuthenticatedDashboardRoutesRouteImport } from './routes/_authenticated/dashboard.routes'
+import { Route as AuthenticatedSignIndexRouteImport } from './routes/_authenticated/sign.index'
 import { Route as AuthenticatedStudioAccountRouteImport } from './routes/_authenticated/studio_.account'
 import { Route as AuthenticatedStudioAgendaRouteImport } from './routes/_authenticated/studio_.agenda'
 import { Route as AuthenticatedStudioBookingRouteImport } from './routes/_authenticated/studio_.booking'
@@ -1481,6 +1484,11 @@ const SecurePasswordRoute = SecurePasswordRouteImport.update({
   path: '/secure/password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignRequestIdRoute = SignRequestIdRouteImport.update({
+  id: '/sign/$requestId',
+  path: '/sign/$requestId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SolutionsIndexRoute = SolutionsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1701,6 +1709,12 @@ const AuthenticatedConsoleConnectorsRoute =
     path: '/connectors',
     getParentRoute: () => AuthenticatedConsoleRoute,
   } as any)
+const AuthenticatedConsoleDocsRoute =
+  AuthenticatedConsoleDocsRouteImport.update({
+    id: '/docs',
+    path: '/docs',
+    getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -1755,6 +1769,11 @@ const AuthenticatedDashboardRoutesRoute =
     path: '/dashboard/routes',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSignIndexRoute = AuthenticatedSignIndexRouteImport.update({
+  id: '/sign/',
+  path: '/sign/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedStudioAccountRoute =
   AuthenticatedStudioAccountRouteImport.update({
     id: '/studio_/account',
@@ -2985,6 +3004,7 @@ export interface FileRoutesByFullPath {
   '/safety/transparency': typeof SafetyTransparencyRoute
   '/safety/zero-knowledge': typeof SafetyZeroKnowledgeRoute
   '/secure/password': typeof SecurePasswordRoute
+  '/sign/$requestId': typeof SignRequestIdRoute
   '/solutions/agencies': typeof SolutionsAgenciesRoute
   '/solutions/creators': typeof SolutionsCreatorsRoute
   '/solutions/developers': typeof SolutionsDevelopersRoute
@@ -3034,6 +3054,7 @@ export interface FileRoutesByFullPath {
   '/console/apps': typeof AuthenticatedConsoleAppsRouteWithChildren
   '/console/billing': typeof AuthenticatedConsoleBillingRoute
   '/console/connectors': typeof AuthenticatedConsoleConnectorsRoute
+  '/console/docs': typeof AuthenticatedConsoleDocsRoute
   '/dashboard/assets': typeof AuthenticatedDashboardAssetsRoute
   '/dashboard/bluesky': typeof AuthenticatedDashboardBlueskyRoute
   '/dashboard/domains': typeof AuthenticatedDashboardDomainsRoute
@@ -3137,6 +3158,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/console/': typeof AuthenticatedConsoleIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/sign/': typeof AuthenticatedSignIndexRoute
   '/qr-code-generator/payment/': typeof QrCodeGeneratorPaymentIndexRoute
   '/console/apps/$appId': typeof AuthenticatedConsoleAppsAppIdRouteWithChildren
   '/console/apps/new': typeof AuthenticatedConsoleAppsNewRoute
@@ -3414,6 +3436,7 @@ export interface FileRoutesByTo {
   '/safety/transparency': typeof SafetyTransparencyRoute
   '/safety/zero-knowledge': typeof SafetyZeroKnowledgeRoute
   '/secure/password': typeof SecurePasswordRoute
+  '/sign/$requestId': typeof SignRequestIdRoute
   '/solutions/agencies': typeof SolutionsAgenciesRoute
   '/solutions/creators': typeof SolutionsCreatorsRoute
   '/solutions/developers': typeof SolutionsDevelopersRoute
@@ -3462,6 +3485,7 @@ export interface FileRoutesByTo {
   '/console/api': typeof AuthenticatedConsoleApiRoute
   '/console/billing': typeof AuthenticatedConsoleBillingRoute
   '/console/connectors': typeof AuthenticatedConsoleConnectorsRoute
+  '/console/docs': typeof AuthenticatedConsoleDocsRoute
   '/dashboard/assets': typeof AuthenticatedDashboardAssetsRoute
   '/dashboard/bluesky': typeof AuthenticatedDashboardBlueskyRoute
   '/dashboard/domains': typeof AuthenticatedDashboardDomainsRoute
@@ -3565,6 +3589,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/console': typeof AuthenticatedConsoleIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/sign': typeof AuthenticatedSignIndexRoute
   '/qr-code-generator/payment': typeof QrCodeGeneratorPaymentIndexRoute
   '/console/apps/new': typeof AuthenticatedConsoleAppsNewRoute
   '/studio/personal/$feature': typeof AuthenticatedStudioPersonalFeatureRoute
@@ -3858,6 +3883,7 @@ export interface FileRoutesById {
   '/safety/transparency': typeof SafetyTransparencyRoute
   '/safety/zero-knowledge': typeof SafetyZeroKnowledgeRoute
   '/secure/password': typeof SecurePasswordRoute
+  '/sign/$requestId': typeof SignRequestIdRoute
   '/solutions/agencies': typeof SolutionsAgenciesRoute
   '/solutions/creators': typeof SolutionsCreatorsRoute
   '/solutions/developers': typeof SolutionsDevelopersRoute
@@ -3907,6 +3933,7 @@ export interface FileRoutesById {
   '/_authenticated/console/apps': typeof AuthenticatedConsoleAppsRouteWithChildren
   '/_authenticated/console/billing': typeof AuthenticatedConsoleBillingRoute
   '/_authenticated/console/connectors': typeof AuthenticatedConsoleConnectorsRoute
+  '/_authenticated/console/docs': typeof AuthenticatedConsoleDocsRoute
   '/_authenticated/dashboard/assets': typeof AuthenticatedDashboardAssetsRoute
   '/_authenticated/dashboard/bluesky': typeof AuthenticatedDashboardBlueskyRoute
   '/_authenticated/dashboard/domains': typeof AuthenticatedDashboardDomainsRoute
@@ -4010,6 +4037,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/console/': typeof AuthenticatedConsoleIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/sign/': typeof AuthenticatedSignIndexRoute
   '/qr-code-generator/payment/': typeof QrCodeGeneratorPaymentIndexRoute
   '/_authenticated/console/apps/$appId': typeof AuthenticatedConsoleAppsAppIdRouteWithChildren
   '/_authenticated/console/apps/new': typeof AuthenticatedConsoleAppsNewRoute
@@ -4304,6 +4332,7 @@ export interface FileRouteTypes {
     | '/safety/transparency'
     | '/safety/zero-knowledge'
     | '/secure/password'
+    | '/sign/$requestId'
     | '/solutions/agencies'
     | '/solutions/creators'
     | '/solutions/developers'
@@ -4353,6 +4382,7 @@ export interface FileRouteTypes {
     | '/console/apps'
     | '/console/billing'
     | '/console/connectors'
+    | '/console/docs'
     | '/dashboard/assets'
     | '/dashboard/bluesky'
     | '/dashboard/domains'
@@ -4456,6 +4486,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/console/'
     | '/dashboard/'
+    | '/sign/'
     | '/qr-code-generator/payment/'
     | '/console/apps/$appId'
     | '/console/apps/new'
@@ -4733,6 +4764,7 @@ export interface FileRouteTypes {
     | '/safety/transparency'
     | '/safety/zero-knowledge'
     | '/secure/password'
+    | '/sign/$requestId'
     | '/solutions/agencies'
     | '/solutions/creators'
     | '/solutions/developers'
@@ -4781,6 +4813,7 @@ export interface FileRouteTypes {
     | '/console/api'
     | '/console/billing'
     | '/console/connectors'
+    | '/console/docs'
     | '/dashboard/assets'
     | '/dashboard/bluesky'
     | '/dashboard/domains'
@@ -4884,6 +4917,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/console'
     | '/dashboard'
+    | '/sign'
     | '/qr-code-generator/payment'
     | '/console/apps/new'
     | '/studio/personal/$feature'
@@ -5176,6 +5210,7 @@ export interface FileRouteTypes {
     | '/safety/transparency'
     | '/safety/zero-knowledge'
     | '/secure/password'
+    | '/sign/$requestId'
     | '/solutions/agencies'
     | '/solutions/creators'
     | '/solutions/developers'
@@ -5225,6 +5260,7 @@ export interface FileRouteTypes {
     | '/_authenticated/console/apps'
     | '/_authenticated/console/billing'
     | '/_authenticated/console/connectors'
+    | '/_authenticated/console/docs'
     | '/_authenticated/dashboard/assets'
     | '/_authenticated/dashboard/bluesky'
     | '/_authenticated/dashboard/domains'
@@ -5328,6 +5364,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/console/'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/sign/'
     | '/qr-code-generator/payment/'
     | '/_authenticated/console/apps/$appId'
     | '/_authenticated/console/apps/new'
@@ -5534,6 +5571,7 @@ export interface RootRouteChildren {
   ReviewTokenRoute: typeof ReviewTokenRoute
   SSlugRoute: typeof SSlugRoute
   SecurePasswordRoute: typeof SecurePasswordRoute
+  SignRequestIdRoute: typeof SignRequestIdRoute
   StatsTokenRoute: typeof StatsTokenRoute
   StudioGridRoute: typeof StudioGridRoute
   SubscribeConfirmRoute: typeof SubscribeConfirmRoute
@@ -7105,6 +7143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SecurePasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign/$requestId': {
+      id: '/sign/$requestId'
+      path: '/sign/$requestId'
+      fullPath: '/sign/$requestId'
+      preLoaderRoute: typeof SignRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/solutions/': {
       id: '/solutions/'
       path: '/'
@@ -7385,6 +7430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleConnectorsRouteImport
       parentRoute: typeof AuthenticatedConsoleRoute
     }
+    '/_authenticated/console/docs': {
+      id: '/_authenticated/console/docs'
+      path: '/docs'
+      fullPath: '/console/docs'
+      preLoaderRoute: typeof AuthenticatedConsoleDocsRouteImport
+      parentRoute: typeof AuthenticatedConsoleRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -7446,6 +7498,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/routes'
       fullPath: '/dashboard/routes'
       preLoaderRoute: typeof AuthenticatedDashboardRoutesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sign/': {
+      id: '/_authenticated/sign/'
+      path: '/sign'
+      fullPath: '/sign/'
+      preLoaderRoute: typeof AuthenticatedSignIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/studio_/account': {
@@ -8909,6 +8968,7 @@ interface AuthenticatedConsoleRouteChildren {
   AuthenticatedConsoleAppsRoute: typeof AuthenticatedConsoleAppsRouteWithChildren
   AuthenticatedConsoleBillingRoute: typeof AuthenticatedConsoleBillingRoute
   AuthenticatedConsoleConnectorsRoute: typeof AuthenticatedConsoleConnectorsRoute
+  AuthenticatedConsoleDocsRoute: typeof AuthenticatedConsoleDocsRoute
   AuthenticatedConsoleIndexRoute: typeof AuthenticatedConsoleIndexRoute
 }
 
@@ -8917,6 +8977,7 @@ const AuthenticatedConsoleRouteChildren: AuthenticatedConsoleRouteChildren = {
   AuthenticatedConsoleAppsRoute: AuthenticatedConsoleAppsRouteWithChildren,
   AuthenticatedConsoleBillingRoute: AuthenticatedConsoleBillingRoute,
   AuthenticatedConsoleConnectorsRoute: AuthenticatedConsoleConnectorsRoute,
+  AuthenticatedConsoleDocsRoute: AuthenticatedConsoleDocsRoute,
   AuthenticatedConsoleIndexRoute: AuthenticatedConsoleIndexRoute,
 }
 
@@ -8943,6 +9004,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedStudioAgendaRoute: typeof AuthenticatedStudioAgendaRoute
   AuthenticatedStudioBookingRoute: typeof AuthenticatedStudioBookingRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedSignIndexRoute: typeof AuthenticatedSignIndexRoute
   AuthenticatedStudioPersonalFeatureRoute: typeof AuthenticatedStudioPersonalFeatureRoute
   AuthenticatedStudioWorkspacesClaimRoute: typeof AuthenticatedStudioWorkspacesClaimRoute
   AuthenticatedStudioWorkspacesNewRoute: typeof AuthenticatedStudioWorkspacesNewRoute
@@ -8972,6 +9034,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedStudioAgendaRoute: AuthenticatedStudioAgendaRoute,
   AuthenticatedStudioBookingRoute: AuthenticatedStudioBookingRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  AuthenticatedSignIndexRoute: AuthenticatedSignIndexRoute,
   AuthenticatedStudioPersonalFeatureRoute:
     AuthenticatedStudioPersonalFeatureRoute,
   AuthenticatedStudioWorkspacesClaimRoute:
@@ -9509,6 +9572,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReviewTokenRoute: ReviewTokenRoute,
   SSlugRoute: SSlugRoute,
   SecurePasswordRoute: SecurePasswordRoute,
+  SignRequestIdRoute: SignRequestIdRoute,
   StatsTokenRoute: StatsTokenRoute,
   StudioGridRoute: StudioGridRoute,
   SubscribeConfirmRoute: SubscribeConfirmRoute,

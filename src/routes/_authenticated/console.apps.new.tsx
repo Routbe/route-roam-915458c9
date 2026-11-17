@@ -8,6 +8,7 @@ import { withStepUp } from "@/components/auth/StepUpDialog";
 import { ConsolePage } from "@/components/console/ConsolePage";
 import { CodeBlock } from "@/components/console/CodeBlock";
 import { AppLogo } from "@/components/console/AppLogo";
+import { LegalIdentityNotice, useDeveloperLegalIdentity } from "@/components/console/LegalIdentityNotice";
 import { APPS_KEY, errorText } from "@/components/console/console-data";
 import { saveOAuthClient, saveOAuthClientSettings } from "@/lib/oauth/console.functions";
 import { MAX_REDIRECT_URIS, redirectUriSchema } from "@/lib/oauth/console-schemas";
@@ -71,6 +72,7 @@ function NewAppWizard() {
   const save = useServerFn(saveOAuthClient);
   const saveSettings = useServerFn(saveOAuthClientSettings);
   const qc = useQueryClient();
+  const legalIdentity = useDeveloperLegalIdentity();
 
   // Restore the draft after a refresh/back; never store secrets.
   useEffect(() => {
@@ -133,6 +135,7 @@ function NewAppWizard() {
 
   return (
     <ConsolePage title="Nieuwe app" description="Vier stappen naar 'Login met ROUT' — met soevereine identiteit ingebouwd.">
+      {legalIdentity === false && !result && <LegalIdentityNotice />}
       <ol className="grid grid-cols-4 gap-2">
         {STEPS.map((label, i) => {
           const n = i + 1;
@@ -249,7 +252,7 @@ function NewAppWizard() {
               <dt className="text-muted-foreground">Geheim</dt><dd>{draft.type === "web" ? "Ja (voor je server)" : "Nee — PKCE zonder geheim"}</dd>
             </dl>
           </div>
-          <Nav back={() => set({ step: 2 })} next={create} nextDisabled={busy} nextLabel={busy ? "Aanmaken…" : "Sleutels aanmaken"} />
+          <Nav back={() => set({ step: 2 })} next={create} nextDisabled={busy || legalIdentity !== true} nextLabel={busy ? "Aanmaken…" : "Sleutels aanmaken"} />
         </section>
       )}
 
