@@ -5,7 +5,8 @@ const enc = (s: string) => Uint8Array.from(s, (c) => c.charCodeAt(0) & 0xff);
 const dec = (b: Uint8Array) => Array.from(b, (x) => String.fromCharCode(x)).join("");
 
 async function deflate(text: string): Promise<string> {
-  const cs = new Blob([enc(text)]).stream().pipeThrough(new CompressionStream("deflate"));
+  const src = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(enc(text)); c.close(); } });
+  const cs = src.pipeThrough(new CompressionStream("deflate"));
   return dec(new Uint8Array(await new Response(cs).arrayBuffer()));
 }
 
@@ -33,7 +34,7 @@ const PAGE = (contents: string) => [
   "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
 ];
 
-const HIDDEN = "BT /F1 12 Tf 20 200 Td 3 Tr (secret) Tj ET BT /F1 12 Tf 20 180 Td 1 1 1 rg (white) Tj ET BT /F1 12 Tf 20 160 Td 0 g (visible) Tj ET BT /F1 1 Tf 20 140 Td (tiny) Tj ET";
+const HIDDEN = "BT /F1 12 Tf 20 200 Td 3 Tr (secret) Tj ET BT /F1 12 Tf 20 180 Td 0 Tr 1 1 1 rg (white) Tj ET BT /F1 12 Tf 20 160 Td 0 g (visible) Tj ET BT /F1 1 Tf 20 140 Td (tiny) Tj ET";
 
 async function pageText(bytes: Uint8Array): Promise<string> {
   const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
@@ -114,6 +115,9 @@ describe("sanitizePdf", () => {
 });
 
 describe("stripHiddenText", () => {
+  it("keeps the render mode across text objects, as PDF does", () => {
+    expect(stripHiddenText("BT 3 Tr (a) Tj ET BT (b) Tj ET").removed.invisible).toBe(2);
+  });
   it("leaves ordinary text untouched", () => {
     const c = "BT /F1 11 Tf 0 0 0 rg 72 700 Td (Contract) Tj ET";
     expect(stripHiddenText(c).text).toBe(c);
