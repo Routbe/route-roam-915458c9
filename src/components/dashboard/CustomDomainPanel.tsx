@@ -104,7 +104,9 @@ export function CustomDomainPanel() {
       toast[res.status === "verified" ? "success" : "message"](
         res.status === "verified"
           ? "Geverifieerd — je profiel is live op dit domein."
-          : "DNS nog niet zichtbaar. Probeer over enkele minuten opnieuw.",
+          : res.dnssecMissing
+            ? "Het TXT-record staat er, maar je domein is niet met DNSSEC ondertekend. Zet DNSSEC aan bij je registrar en probeer opnieuw."
+            : "DNS nog niet zichtbaar. Probeer over enkele minuten opnieuw.",
       );
       await refresh();
     } catch (error) {
