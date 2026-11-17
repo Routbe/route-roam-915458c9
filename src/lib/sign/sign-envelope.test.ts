@@ -7,7 +7,7 @@ describe("RSG1 document envelope", () => {
     const pdf = new TextEncoder().encode("%PDF-1.7 hello");
     const env = await sealDocument(key, pdf, "original");
     expect(env.length).toBe(16 + SIGN_BUCKET + 16);
-    expect(await openDocument(key, env, "original")).toEqual(pdf);
+    expect(Array.from(await openDocument(key, env, "original"))).toEqual(Array.from(pdf));
   });
   it("binds the copy role and the key", async () => {
     const key = newDocumentKey();
@@ -19,7 +19,7 @@ describe("RSG1 document envelope", () => {
     const key = newDocumentKey();
     const f = keyToFragment(key);
     expect(f).toMatch(/^[A-Za-z0-9_-]{43}$/);
-    expect(keyFromFragment(`#k=${f}`)).toEqual(key);
+    expect(Array.from(keyFromFragment(`#k=${f}`)!)).toEqual(Array.from(key));
     expect(keyFromFragment("#k=short")).toBeNull();
   });
 });
