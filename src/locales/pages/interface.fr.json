@@ -256,5 +256,13 @@
   "cardTap.denied.body": "Ce passage n'a pas pu être confirmé. Approchez à nouveau la carte de votre téléphone ; un lien copié ou ancien ne fonctionne jamais.",
   "cardTap.verified.title": "ROUT Card authentique",
   "cardTap.verified.badge": "Vérifiée cryptographiquement",
-  "cardTap.handoff.notOwn.body": "Ce n'est pas votre propre ROUT Card active. Votre coffre de récupération ne peut être configuré qu'avec votre propre carte. Le secret de la carte a été effacé de cette fenêtre."
+  "cardTap.handoff.notOwn.body": "Ce n'est pas votre propre ROUT Card active. Votre coffre de récupération ne peut être configuré qu'avec votre propre carte. Le secret de la carte a été effacé de cette fenêtre.",
+  "sudo.title": "Confirmer avec ta clé d’accès",
+  "sudo.description": "Cette action est sensible. Après ta clé d’accès, tu peux effectuer ce type d’action pendant 5 minutes sans reconfirmer.",
+  "sudo.usePasskey": "Utiliser la clé d’accès",
+  "sudo.passkeyFailed": "La clé d’accès n’a pas été confirmée.",
+  "sudo.notOpened": "La confirmation a échoué. Réessaie.",
+  "sudo.noPasskey": "Cette action nécessite une clé d’accès.",
+  "sudo.addPasskey": "Ajouter une clé d’accès",
+  "sudo.cancelled": "Confirmation annulée."
 }
