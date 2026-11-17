@@ -267,7 +267,7 @@ export async function sanitizePdf(input: Uint8Array): Promise<SanitizeResult> {
     segStart = b;
   }
   s = chars.join("");
-  const dictOf = (st: StreamObj) => s.slice(st.dataStart - (st.dataStart - st.objStart), st.dataStart);
+  const dictOf = (st: StreamObj) => s.slice(st.objStart, st.dataStart);
 
   // 2. Live streams: object streams may not hide dangerous names; content streams lose hidden text.
   const removedText: Record<HiddenKind, number> = { invisible: 0, white: 0, tiny: 0 };
@@ -295,8 +295,8 @@ export async function sanitizePdf(input: Uint8Array): Promise<SanitizeResult> {
     const res = stripHiddenText(text);
     if (res.text === text) continue;
     for (const k of Object.keys(removedText) as HiddenKind[]) removedText[k] += res.removed[k];
-    const live = dictOf(st);
-    const dictText = live.slice(live.search(/<</), live.lastIndexOf(">>") + 2);
+    const head = dictOf(st);
+    const dictText = head.slice(head.search(/<</), head.lastIndexOf(">>") + 2);
     const dict = stripKeys(dictText, ["/Length", "/Filter", "/DecodeParms"]).trim();
     rewritten.push({ num: st.num, gen: st.gen, dict, data: res.text });
   }
