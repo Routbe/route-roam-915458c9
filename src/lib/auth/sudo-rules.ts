@@ -17,20 +17,43 @@ const JTI = /^[A-Za-z0-9_-]{22}$/;
 /** Clock skew tolerated for a token stamped slightly in the future. */
 const SKEW_SEC = 5;
 
-export type SudoClaims = { userId: string; binding: string; verifiedAtSec: number; expiresAtSec: number; jti: string };
+export type SudoClaims = {
+  userId: string;
+  binding: string;
+  verifiedAtSec: number;
+  expiresAtSec: number;
+  jti: string;
+};
 
-export function sudoPayload(userId: string, binding: string, verifiedAtSec: number, jti: string): string {
-  if (!UUID.test(userId) || !BINDING.test(binding) || !JTI.test(jti) || !Number.isSafeInteger(verifiedAtSec)) throw new Error("sudo_payload_invalid");
+export function sudoPayload(
+  userId: string,
+  binding: string,
+  verifiedAtSec: number,
+  jti: string,
+): string {
+  if (
+    !UUID.test(userId) ||
+    !BINDING.test(binding) ||
+    !JTI.test(jti) ||
+    !Number.isSafeInteger(verifiedAtSec)
+  )
+    throw new Error("sudo_payload_invalid");
   return `${VERSION}.${userId}.${binding}.${verifiedAtSec}.${verifiedAtSec + SUDO_TTL_SEC}.${jti}`;
 }
 
 /** Owner, session, shape and the hard 300 s window; anything else is null. */
-export function parseSudoPayload(payload: string, userId: string, binding: string, nowSec: number): SudoClaims | null {
+export function parseSudoPayload(
+  payload: string,
+  userId: string,
+  binding: string,
+  nowSec: number,
+): SudoClaims | null {
   const parts = payload.split(".");
   if (parts.length !== 6) return null;
   const [v, uid, bind, at, exp, jti] = parts as [string, string, string, string, string, string];
   if (v !== VERSION || !UUID.test(uid) || uid !== userId) return null;
-  if (!BINDING.test(bind) || !BINDING.test(binding) || !constantTimeEqual(bind, binding)) return null;
+  if (!BINDING.test(bind) || !BINDING.test(binding) || !constantTimeEqual(bind, binding))
+    return null;
   if (!JTI.test(jti)) return null;
   const verifiedAtSec = Number(at);
   const expiresAtSec = Number(exp);
@@ -42,7 +65,9 @@ export function parseSudoPayload(payload: string, userId: string, binding: strin
 }
 
 /** Only a general passkey proof (never an action-scoped or other-factor proof) may open sudo. */
-export function proofOpensSudo(proof: { method: string; scope: string } | null | undefined): boolean {
+export function proofOpensSudo(
+  proof: { method: string; scope: string } | null | undefined,
+): boolean {
   return !!proof && proof.method === "passkey" && proof.scope === "*";
 }
 
@@ -58,7 +83,10 @@ export function isSudoRequiredError(e: unknown): boolean {
 }
 
 /** Reads one cookie from a Cookie header; the first occurrence wins, malformed encoding is ignored. */
-export function readCookieHeader(header: string | null | undefined, name: string): string | undefined {
+export function readCookieHeader(
+  header: string | null | undefined,
+  name: string,
+): string | undefined {
   if (!header) return undefined;
   for (const part of header.split(";")) {
     const i = part.indexOf("=");
@@ -74,7 +102,10 @@ export function readCookieHeader(header: string | null | undefined, name: string
 }
 
 /** Better Auth session cookies carry `<token>.<signature>`; only the token identifies the session. */
-export const SESSION_COOKIES = ["__Secure-better-auth.session_token", "better-auth.session_token"] as const;
+export const SESSION_COOKIES = [
+  "__Secure-better-auth.session_token",
+  "better-auth.session_token",
+] as const;
 export function sessionTokenFrom(raw: string | undefined): string | null {
   if (!raw) return null;
   const token = raw.split(".")[0] ?? "";

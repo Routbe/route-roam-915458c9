@@ -41,12 +41,18 @@ async function sign(payload: string): Promise<string> {
   return `${payload}.${await hmacSha256Hex(await sudoKey(), payload)}`;
 }
 
-export async function verifySudoToken(raw: string | null | undefined, userId: string, sessionToken: string | null, nowSec = Math.floor(Date.now() / 1000)): Promise<SudoClaims | null> {
+export async function verifySudoToken(
+  raw: string | null | undefined,
+  userId: string,
+  sessionToken: string | null,
+  nowSec = Math.floor(Date.now() / 1000),
+): Promise<SudoClaims | null> {
   if (!raw || raw.length > 300 || !sessionToken) return null;
   const i = raw.lastIndexOf(".");
   if (i < 0) return null;
   const payload = raw.slice(0, i);
-  if (!constantTimeEqual(raw.slice(i + 1), await hmacSha256Hex(await sudoKey(), payload))) return null;
+  if (!constantTimeEqual(raw.slice(i + 1), await hmacSha256Hex(await sudoKey(), payload)))
+    return null;
   return parseSudoPayload(payload, userId, await sessionBinding(sessionToken), nowSec);
 }
 
@@ -54,7 +60,12 @@ export async function verifySudoToken(raw: string | null | undefined, userId: st
  * Exchanges the step-up cookie for a sudo token. Only a general passkey proof of this member
  * opens sudo; the window ends SUDO_TTL_SEC after the passkey was verified, however late the exchange.
  */
-export async function mintSudoToken(userId: string, stepUpRaw: string | null | undefined, sessionToken: string | null, nowSec = Math.floor(Date.now() / 1000)): Promise<{ value: string; claims: SudoClaims } | null> {
+export async function mintSudoToken(
+  userId: string,
+  stepUpRaw: string | null | undefined,
+  sessionToken: string | null,
+  nowSec = Math.floor(Date.now() / 1000),
+): Promise<{ value: string; claims: SudoClaims } | null> {
   if (!sessionToken) return null;
   const { verifyStepUpProof } = await import("./step-up.server");
   const proof = await verifyStepUpProof(stepUpRaw, userId, nowSec);
@@ -87,7 +98,11 @@ export function sessionTokenFromReader(read: (name: string) => string | undefine
  * Throws SudoRequiredError (401) unless the request carries a valid sudo token for this member
  * and this session. `read` defaults to the current request's cookies.
  */
-export async function ensureSudo(userId: string, label: string, read?: (name: string) => string | undefined): Promise<SudoClaims> {
+export async function ensureSudo(
+  userId: string,
+  label: string,
+  read?: (name: string) => string | undefined,
+): Promise<SudoClaims> {
   let reader = read;
   if (!reader) {
     const { readRequestCookie } = await import("@/lib/request-context");
@@ -106,6 +121,10 @@ export async function ensureSudo(userId: string, label: string, read?: (name: st
     throw new SudoRequiredError();
   }
   const { recordSecurityEvent } = await import("@/lib/audit-log.server");
-  void recordSecurityEvent({ eventType: `sudo.used.${label}`, userId, payload: { expiresAt: claims.expiresAtSec } });
+  void recordSecurityEvent({
+    eventType: `sudo.used.${label}`,
+    userId,
+    payload: { expiresAt: claims.expiresAtSec },
+  });
   return claims;
 }

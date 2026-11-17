@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { endSudo, readSudoStatus, requestSudo, subscribeSudo, sudoSnapshot, withSudo, type SudoState } from "@/lib/auth/sudo-client";
+import {
+  endSudo,
+  readSudoStatus,
+  requestSudo,
+  subscribeSudo,
+  sudoSnapshot,
+  withSudo,
+  type SudoState,
+} from "@/lib/auth/sudo-client";
 
 /**
  * Sudo Mode for components: whether a 300 s passkey window is open, a live countdown,
@@ -22,6 +30,14 @@ export function useSudoMode() {
   const expiresMs = state.expiresAt ? Date.parse(state.expiresAt) : 0;
   const secondsLeft = state.active ? Math.max(0, Math.ceil((expiresMs - now) / 1000)) : 0;
 
-  const run = useCallback(<T,>(fn: () => Promise<T>) => withSudo(fn), []);
-  return { active: secondsLeft > 0, secondsLeft, expiresAt: state.expiresAt, request: requestSudo, run, end: endSudo, refresh: readSudoStatus };
+  const run = useCallback(<T>(fn: () => Promise<T>) => withSudo(fn), []);
+  return {
+    active: secondsLeft > 0,
+    secondsLeft,
+    expiresAt: state.expiresAt,
+    request: requestSudo,
+    run,
+    end: endSudo,
+    refresh: readSudoStatus,
+  };
 }

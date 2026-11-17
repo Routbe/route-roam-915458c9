@@ -32,7 +32,11 @@ export function subscribeSudo(l: (s: SudoState) => void): () => void {
 export const sudoSnapshot = () => current;
 
 async function call(method: "GET" | "POST" | "DELETE"): Promise<SudoState> {
-  const res = await fetch(ENDPOINT, { method, credentials: "same-origin", headers: { accept: "application/json" } });
+  const res = await fetch(ENDPOINT, {
+    method,
+    credentials: "same-origin",
+    headers: { accept: "application/json" },
+  });
   if (!res.ok) return INACTIVE;
   const body = (await res.json().catch(() => null)) as SudoState | null;
   return body && typeof body.active === "boolean" ? body : INACTIVE;
