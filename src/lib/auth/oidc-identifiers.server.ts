@@ -87,7 +87,17 @@ export async function generateUserInfoResponse(
     // ROUT keeps only a one-way nullifier, never the registry number itself.
     claims["national_registry_number"] = null;
   }
-  const disclosed = disclosedSensitive(grantedScopes, id.tier);
+  const { IDENTITY_OS_SCOPES, identityOsClaims } = await import("@/lib/oauth/identity-os-scopes");
+  const osScopes = grantedScopes.filter((s) => IDENTITY_OS_SCOPES.includes(s));
+  let osDisclosed: string[] = [];
+  if (osScopes.length) {
+    const { readIdentityOsInput } = await import("@/lib/oauth/identity-os.server");
+    const input = await readIdentityOsInput(userId, id.tier === "tier_2" ? splitLegalName(id.legalName) : null);
+    const os = identityOsClaims(osScopes, clientId, input);
+    Object.assign(claims, os.claims);
+    osDisclosed = os.disclosed;
+  }
+  const disclosed = [...disclosedSensitive(grantedScopes, id.tier), ...osDisclosed];
   if (disclosed.length) {
     // No sensitive claims may leave ROUT without their disclosure record.
     await sql`insert into public.identity_disclosure_logs (user_id, client_id, disclosed_scopes, ip_hash)
