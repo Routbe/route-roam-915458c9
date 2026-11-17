@@ -68,7 +68,8 @@ export type SudoLabel =
   | "oauth_secret_rotate"
   | "presence_key_rotate"
   | "ingest_token_rotate"
-  | "workspace_key_rotate";
+  | "workspace_key_rotate"
+  | "document_sign";
 
 /**
  * Sudo Mode gate (rules in sudo-rules.ts): the signed-in member must hold a sudo session opened

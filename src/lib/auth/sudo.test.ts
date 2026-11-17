@@ -157,6 +157,7 @@ describe("sensitive endpoints carry requireSudo", () => {
     ["src/lib/custom-presence.functions.ts", "rotatePresenceApiKey", "presence_key_rotate"],
     ["src/lib/omni-ingest.functions.ts", "rotateIngestToken", "ingest_token_rotate"],
     ["src/lib/workspace-inbox.functions.ts", "initWsInboxKey", "workspace_key_rotate"],
+    ["src/lib/sign/sign.functions.ts", "signSignRequest", "document_sign"],
   ];
   for (const [file, fn, label] of gated) {
     it(`${fn} requires sudo (${label})`, () => {
