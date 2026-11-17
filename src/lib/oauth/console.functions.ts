@@ -41,7 +41,9 @@ export const consoleAccess = createServerFn({ method: "GET" })
   .middleware([requireDeveloperAccess])
   .handler(async ({ context }) => {
     const { isVerifiedDeveloper } = await import("./provider.server");
-    return { verified: await isVerifiedDeveloper(context.userId) };
+    const { hasDeveloperLegalIdentity } = await import("./legal-identity-gate.server");
+    const [verified, legalIdentity] = await Promise.all([isVerifiedDeveloper(context.userId), hasDeveloperLegalIdentity(context.userId)]);
+    return { verified, legalIdentity };
   });
 
 export const listOAuthDebugEvents = createServerFn({ method: "POST" })
@@ -102,6 +104,9 @@ export const saveOAuthClient = createServerFn({ method: "POST" })
       if (data.id) {
         return { client: await updateClient({ userId: context.userId, workspaceId: context.activeWorkspaceId ?? null }, data.id, input), clientSecret: null };
       }
+      // New credentials need a KYC legal identity; editing an existing app does not.
+      const { assertDeveloperLegalIdentity } = await import("./legal-identity-gate.server");
+      await assertDeveloperLegalIdentity(context.userId);
       const { ensureStepUpSession } = await import("@/lib/auth/step-up.server");
       await ensureStepUpSession(context.userId, "oauth_secret");
       const { hitRateLimit } = await import("@/lib/rate-limit-db.server");

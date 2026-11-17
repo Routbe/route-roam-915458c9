@@ -45,6 +45,8 @@ export const createApiKey = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data, context }) => {
+    const { assertDeveloperLegalIdentity } = await import("@/lib/oauth/legal-identity-gate.server");
+    await assertDeveloperLegalIdentity(context.userId);
     const { key, prefix } = newApiKey();
     const { data: row, error } = await context.db
       .from("api_keys")
