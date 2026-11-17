@@ -54,11 +54,17 @@ export async function startClaim(userId: string, rawDomain: string): Promise<Dom
   return toClaim(rows[0]);
 }
 
+/** The TXT record is there AND the answer is DNSSEC-validated (domains.server.ts). */
 async function recordPresent(userId: string, domain: string): Promise<boolean> {
-  const { query } = await import("./domains.server");
+  return (await recordState(userId, domain)) === "ok";
+}
+
+async function recordState(userId: string, domain: string): Promise<"ok" | "missing" | "dnssec_missing"> {
+  const { queryWithDnssec } = await import("./domains.server");
   const expected = await claimRecordValue(kek(), userId, domain);
-  const records = await query(claimRecordName(domain), "TXT");
-  return records.some((r) => r.replace(/"\s*"/g, "") === expected);
+  const answer = await queryWithDnssec(claimRecordName(domain), "TXT");
+  if (!answer.records.some((r) => r.replace(/"\s*"/g, "") === expected)) return "missing";
+  return answer.dnssec ? "ok" : "dnssec_missing";
 }
 
 /** First verification: TXT present → verified, identity link (dns_txt) + dns_verified badge. */
@@ -67,7 +73,8 @@ export async function verifyClaim(userId: string, claimId: string): Promise<Doma
   const row = rows[0];
   if (!row) throw new Error("not_found");
   const domain = String(row["domain"]);
-  if (!(await recordPresent(userId, domain))) throw new Error("record_missing");
+  const state = await recordState(userId, domain);
+  if (state !== "ok") throw new Error(state === "dnssec_missing" ? "dnssec_missing" : "record_missing");
   const owner = (await sql`select user_id from public.domain_claims where handle = ${String(row["handle"])}
     and status in ('verified','grace') and id <> ${claimId} limit 1`) as Row[];
   if (owner[0]) throw new Error("handle_claimed");
