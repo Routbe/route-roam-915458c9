@@ -13,6 +13,7 @@ import { masterKeyFromMnemonic, newMasterKey } from "@/lib/e2ee/recovery";
 import { loadDeviceKey, saveDeviceKey, workspaceKeyFromMaster, type WorkspaceKey } from "@/lib/e2ee/device-key";
 import { decryptLedgerEvent, generateLedgerKeys, unlockLedgerKey } from "@/lib/ledger/crypto";
 import { wipe, wipeMessage } from "@/lib/crypto/wipe";
+import { newDocumentKey, openDocument, sealDocument, SignEnvelopeError } from "@/lib/sign/sign-envelope";
 import { BHM_MAX_HASHES, bhmPreimage, isBhmKind } from "@/lib/oauth/blind-hash";
 import { claimSubject } from "@/lib/recovery/pairwise";
 import {
@@ -1314,6 +1315,33 @@ const coreHandlers: CoreHandlers = {
       return fail("decrypt_failed");
     } finally {
       wipe(secret);
+    }
+  },
+
+  async "sign.seal"({ pdf }) {
+    const doc = bytes(pdf);
+    const key = newDocumentKey();
+    try {
+      const envelope = await sealDocument(key, doc, "original");
+      return { envelope, key: key.slice() };
+    } catch (e) {
+      if (e instanceof SignEnvelopeError) return fail("invalid_input");
+      throw e;
+    } finally {
+      wipe(doc, key);
+    }
+  },
+
+  async "sign.open"({ key, envelope, role }) {
+    const k = bytes(key);
+    try {
+      const r = role === "original" || role === "signed" ? role : fail("invalid_input");
+      return { plaintext: await openDocument(k, bytes(envelope), r) };
+    } catch (e) {
+      if (e instanceof SignEnvelopeError) return fail(e.message === "decrypt" ? "decrypt_failed" : "invalid_input");
+      throw e;
+    } finally {
+      wipe(k);
     }
   },
 

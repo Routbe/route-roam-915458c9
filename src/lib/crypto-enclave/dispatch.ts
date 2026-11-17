@@ -2,7 +2,7 @@ import { wipeMessage } from "@/lib/crypto/wipe";
 import type { EnclaveErrorCode, EnclaveOp, EnclaveResponse } from "./protocol";
 
 /** Ops whose result carries plaintext: moved to the UI (never copied), then the worker's view is detached. */
-const PLAINTEXT_RESULT_OPS: ReadonlySet<EnclaveOp> = new Set<EnclaveOp>(["data.open", "protocol.openEvent", "rve1.open"]);
+const PLAINTEXT_RESULT_OPS: ReadonlySet<EnclaveOp> = new Set<EnclaveOp>(["data.open", "protocol.openEvent", "rve1.open", "sign.open"]);
 
 type Outcome = { ok: true; result: unknown } | { ok: false; code: EnclaveErrorCode };
 
