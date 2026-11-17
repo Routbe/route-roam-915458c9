@@ -5,6 +5,7 @@
  */
 import { isStepUpRequiredError } from "./step-up-rules";
 import { isSudoRequiredError } from "./sudo-rules";
+import { i18n } from "@/lib/i18n";
 
 export type SudoState = { active: boolean; expiresAt: string | null; secondsLeft: number };
 const INACTIVE: SudoState = { active: false, expiresAt: null, secondsLeft: 0 };
@@ -60,9 +61,10 @@ export function requestSudo(): Promise<boolean> {
   return new Promise((resolve) => (opener ? opener(resolve) : resolve(false)));
 }
 
+/** The member closed the passkey prompt; the message is shown as is. */
 export class SudoCancelledError extends Error {
   constructor() {
-    super("SUDO_CANCELLED");
+    super(i18n.t("sudo.cancelled"));
   }
 }
 
