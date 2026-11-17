@@ -256,5 +256,13 @@
   "cardTap.denied.body": "Deze tik kon niet bevestigd worden. Houd de kaart opnieuw tegen je telefoon; een gekopieerde of oude link werkt nooit.",
   "cardTap.verified.title": "Echte ROUT Card",
   "cardTap.verified.badge": "Cryptografisch geverifieerd",
-  "cardTap.handoff.notOwn.body": "Dit is niet je eigen, actieve ROUT Card. Je herstelkluis kan alleen met je eigen kaart worden ingesteld. Het kaartgeheim is uit dit venster gewist."
+  "cardTap.handoff.notOwn.body": "Dit is niet je eigen, actieve ROUT Card. Je herstelkluis kan alleen met je eigen kaart worden ingesteld. Het kaartgeheim is uit dit venster gewist.",
+  "sudo.title": "Bevestig met je passkey",
+  "sudo.description": "Deze actie is gevoelig. Na je passkey mag je 5 minuten zulke acties doen zonder opnieuw te bevestigen.",
+  "sudo.usePasskey": "Gebruik passkey",
+  "sudo.passkeyFailed": "Passkey niet bevestigd.",
+  "sudo.notOpened": "Bevestiging mislukt. Probeer het opnieuw.",
+  "sudo.noPasskey": "Voor deze actie heb je een passkey nodig.",
+  "sudo.addPasskey": "Passkey toevoegen",
+  "sudo.cancelled": "Bevestiging geannuleerd."
 }

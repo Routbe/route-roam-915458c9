@@ -1,4 +1,4 @@
-import { withStepUp } from "@/components/auth/StepUpDialog";
+import { withSudo } from "@/lib/auth/sudo-client";
 import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
@@ -193,7 +193,7 @@ export function OAuthConsole() {
   async function onRotate(row: ClientRow) {
     setBusy(true);
     try {
-      const result = (await withStepUp(() => rotate({ data: { id: row.id } }))) as { clientSecret: string };
+      const result = (await withSudo(() => rotate({ data: { id: row.id } }))) as { clientSecret: string };
       setSecret({ clientId: row.clientId, value: result.clientSecret });
       setRevealed(true);
       toast.success(trI18n.t("ui.e277863460"));

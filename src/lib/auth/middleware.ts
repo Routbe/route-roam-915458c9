@@ -59,3 +59,28 @@ async function activeWorkspaceCookie(): Promise<string | null> {
     return null;
   }
 }
+
+/** Which Sudo Mode gate let an action through; recorded on the audit chain as `sudo.used.<label>`. */
+export type SudoLabel =
+  | "account_merge"
+  | "recovery_vault"
+  | "hardware_identity"
+  | "oauth_secret_rotate"
+  | "presence_key_rotate"
+  | "ingest_token_rotate"
+  | "workspace_key_rotate";
+
+/**
+ * Sudo Mode gate (rules in sudo-rules.ts): the signed-in member must hold a sudo session opened
+ * with a passkey at most 300 s ago in this sign-in session, else SUDO_REQUIRED (401).
+ * Always listed after requireAuth / requireDeveloperAccess; requireAuth runs only once.
+ */
+export function requireSudo(label: SudoLabel) {
+  return createMiddleware({ type: "function" })
+    .middleware([requireAuth])
+    .server(async ({ next, context }) => {
+      const { ensureSudo } = await import("./sudo.server");
+      await ensureSudo(context.userId, label);
+      return next();
+    });
+}

@@ -4,7 +4,7 @@ vi.mock("@tanstack/react-start", () => ({ createServerFn: () => {
  const chain = { middleware: () => chain, inputValidator: () => chain, handler: (h: unknown) => h };
  return chain;
 } }));
-vi.mock("@/lib/auth/middleware", () => ({ requireAuth: {} }));
+vi.mock("@/lib/auth/middleware", () => ({ requireAuth: {}, requireSudo: (label: string) => ({ sudo: label }) }));
 vi.mock("@/lib/storage/s3.server", () => ({ storageConfigured: mocks.configured, putObject: mocks.put }));
 vi.mock("@/lib/auth/step-up.server", () => ({ ensureStepUpProof: mocks.proof }));
 vi.mock("@/lib/pq/prekey-publish.server", () => ({ productionPublishDeps: async () => ({ rpId: "rout.be", origins: ["https://rout.be"] }), publishPrekey: vi.fn() }));

@@ -256,5 +256,13 @@
   "cardTap.denied.body": "This tap could not be confirmed. Hold the card against your phone again; a copied or old link never works.",
   "cardTap.verified.title": "Authentic ROUT Card",
   "cardTap.verified.badge": "Cryptographically verified",
-  "cardTap.handoff.notOwn.body": "This is not your own, active ROUT Card. Your recovery vault can only be set up with your own card. The card secret has been wiped from this window."
+  "cardTap.handoff.notOwn.body": "This is not your own, active ROUT Card. Your recovery vault can only be set up with your own card. The card secret has been wiped from this window.",
+  "sudo.title": "Confirm with your passkey",
+  "sudo.description": "This is a sensitive action. After your passkey you can do such actions for 5 minutes without confirming again.",
+  "sudo.usePasskey": "Use passkey",
+  "sudo.passkeyFailed": "Passkey was not confirmed.",
+  "sudo.notOpened": "Confirmation failed. Please try again.",
+  "sudo.noPasskey": "This action needs a passkey.",
+  "sudo.addPasskey": "Add a passkey",
+  "sudo.cancelled": "Confirmation cancelled."
 }

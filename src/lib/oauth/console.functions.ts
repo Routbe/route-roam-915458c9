@@ -2,7 +2,7 @@ import { requireDeveloperAccess } from "@/lib/auth/developer-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { cleanRedirectUri } from "./redirect-match";
-import { optionalAuth, requireAuth } from "@/lib/auth/middleware";
+import { optionalAuth, requireAuth, requireSudo } from "@/lib/auth/middleware";
 import { needsStepUp, shareRichIdentity, STRICT_ACR } from "./step-up";
 import { clientSchema, settingsSchema, testUserSchema, verificationRequestSchema } from "./console-schemas";
 
@@ -162,12 +162,10 @@ export const upgradeOAuthClientToPairwise = createServerFn({ method: "POST" })
   });
 
 export const rotateOAuthSecret = createServerFn({ method: "POST" })
-  .middleware([requireDeveloperAccess])
+  .middleware([requireDeveloperAccess, requireSudo("oauth_secret_rotate")])
   .inputValidator((data: unknown) => idSchema.parse(data))
   .handler(async ({ data, context }) => {
     await assertVerified(context.userId);
-    const { ensureStepUpSession } = await import("@/lib/auth/step-up.server");
-    await ensureStepUpSession(context.userId, "oauth_secret");
     const { rotateClientSecret } = await import("./provider.server");
     return friendly(async () => {
       const clientSecret = await rotateClientSecret({ userId: context.userId, workspaceId: context.activeWorkspaceId ?? null }, data.id);

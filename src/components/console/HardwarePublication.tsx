@@ -4,6 +4,7 @@ import { KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { authClient } from "@/lib/auth-client";
+import { activateSudo } from "@/lib/auth/sudo-client";
 import { hardwarePublicationStatus, publishHardwareIdentity } from "@/lib/pq/hardware-publication.functions";
 import { useI18n } from "@/lib/i18n";
 import { captureEnclaveScope, enclave } from "@/lib/crypto-enclave/client";
@@ -24,6 +25,8 @@ export function HardwarePublication() {
    if (!s.handle) throw new Error("no_handle");
    const signedIn = await authClient.signIn.passkey();
    if (signedIn.error) throw new Error("passkey_required");
+   // The same passkey tap opens Sudo Mode, which publishHardwareIdentity requires.
+   if (!(await activateSudo()).active) throw new Error("sudo_required");
    const scope = captureEnclaveScope();
    const { createHardwarePublication } = await import("@/lib/pq/hardware-publication");
    const created = await createHardwarePublication(user.id, s.rpId, s.handle);

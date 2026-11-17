@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Check, Copy, Link2, LoaderCircle, Plus, RefreshCw, KeyRound, Trash2, ShieldOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { withSudo } from "@/lib/auth/sudo-client";
 import { dismissOmniJob, enqueueOmniUrl, getOmniRealtimeTicket, getIngestTokenStatus, listOmniIngestJobs, retryOmniJob, revokeIngestToken, rotateIngestToken } from "@/lib/omni-ingest.functions";
 import { readyOmniItem, type OmniJob } from "@/lib/omni-ingest";
 import type { SocialGridItem } from "@/lib/social-grid";
@@ -95,7 +96,7 @@ export function OmniIngestPanel({ onAdd, full }: { onAdd: (item: SocialGridItem)
       setAccepted((previous) => previous.filter((job) => job.id !== optimistic?.id));
       setError("omni.invalidLink");
     } });
-  const rotate = useMutation({ mutationFn: () => rotateIngestToken(), onSuccess: (result) => { setToken(result.token); setCopied(false); void tokenStatus.refetch(); },
+  const rotate = useMutation({ mutationFn: () => withSudo(() => rotateIngestToken()), onSuccess: (result) => { setToken(result.token); setCopied(false); void tokenStatus.refetch(); },
     onError: () => setError("omni.tokenFailed") });
   const retry = useMutation({ mutationFn: (id: string) => retryOmniJob({ data: { id } }), onSuccess: () => jobs.refetch(),
     onError: () => setError("omni.retryUnavailable") });

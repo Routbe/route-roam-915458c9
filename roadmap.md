@@ -402,3 +402,10 @@
 - [x] JSON-waarden komen niet meer dubbel verpakt in de database (gevonden tijdens de meting)
 - [ ] Sessiecontrole van Better Auth zelf (sessie + gebruiker) blijft aparte rondes — niet in deze opdracht
 
+## Opdracht eigenaar 2026-11-17 — Sudo Mode + A1-backfill
+- [x] /api/v1/auth/sudo: passkey-bevestiging opent een ondertekende sudo-sessie van precies 300 s, gebonden aan lid en inlogsessie
+- [x] requireSudo op accountfusie, herstelkluis, hardware-identiteit, OAuth-secret, presence-sleutel, ingest-token en workspace-inboxsleutel
+- [x] useSudoMode() + minimaal passkey-venster (nl/en/de/fr), tests in src/lib/auth/sudo.test.ts
+- [x] A1-backfill alleen-lezen gecontroleerd op Neon: 3 profielen met oude payment_method, overige velden 0, profile_field_keys en verified_identity_nullifiers leeg
+- [ ] A1-backfill echt draaien: ROUT_VAULT_KEK + DATABASE_URL op de eigen server, eerste veldsleutel laten registreren, dan `bun scripts/a1-backfill.ts` en `--apply` — eigenaar, met GO-nummer
+- [ ] Sudo Mode live doorklikken met een echte passkey — vraagt DATABASE_URL en BETTER_AUTH_SECRET in een omgeving

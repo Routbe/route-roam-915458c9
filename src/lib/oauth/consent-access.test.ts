@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/auth/developer-access", () => ({ requireDeveloperAccess: "developer-guard" }));
-vi.mock("@/lib/auth/middleware", () => ({ requireAuth: "session-guard", optionalAuth: "optional-session" }));
+vi.mock("@/lib/auth/middleware", () => ({ requireAuth: "session-guard", optionalAuth: "optional-session", requireSudo: (label: string) => `sudo:${label}` }));
 vi.mock("@tanstack/react-start", () => ({
   createServerFn: () => {
     const chain = {

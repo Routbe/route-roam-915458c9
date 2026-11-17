@@ -256,5 +256,13 @@
   "cardTap.denied.body": "Dieses Antippen konnte nicht bestätigt werden. Halten Sie die Karte erneut an Ihr Telefon; ein kopierter oder alter Link funktioniert nie.",
   "cardTap.verified.title": "Echte ROUT Card",
   "cardTap.verified.badge": "Kryptografisch verifiziert",
-  "cardTap.handoff.notOwn.body": "Das ist nicht Ihre eigene, aktive ROUT Card. Ihr Wiederherstellungstresor kann nur mit Ihrer eigenen Karte eingerichtet werden. Das Kartengeheimnis wurde aus diesem Fenster gelöscht."
+  "cardTap.handoff.notOwn.body": "Das ist nicht Ihre eigene, aktive ROUT Card. Ihr Wiederherstellungstresor kann nur mit Ihrer eigenen Karte eingerichtet werden. Das Kartengeheimnis wurde aus diesem Fenster gelöscht.",
+  "sudo.title": "Mit deinem Passkey bestätigen",
+  "sudo.description": "Diese Aktion ist sensibel. Nach deinem Passkey kannst du solche Aktionen 5 Minuten lang ohne erneute Bestätigung ausführen.",
+  "sudo.usePasskey": "Passkey verwenden",
+  "sudo.passkeyFailed": "Passkey wurde nicht bestätigt.",
+  "sudo.notOpened": "Bestätigung fehlgeschlagen. Bitte versuche es erneut.",
+  "sudo.noPasskey": "Für diese Aktion brauchst du einen Passkey.",
+  "sudo.addPasskey": "Passkey hinzufügen",
+  "sudo.cancelled": "Bestätigung abgebrochen."
 }

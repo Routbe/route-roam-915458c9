@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MasterKeyRecoveryCard } from "@/components/booking/SealedBookingDetails";
 import { b64uDecode, b64uEncode } from "@/lib/booking-engine/sealed-booking";
 import { useI18n } from "@/lib/i18n";
+import { withSudo } from "@/lib/auth/sudo-client";
 import {
   declineWsInboxQuestion, getWsInbox, initWsInboxKey, publishWsInboxQuestion, replyWsInboxQuestion, setWsAskEnabled,
 } from "@/lib/workspace-inbox.functions";
@@ -96,7 +97,7 @@ export function WorkspaceAskInbox({ workspaceId, slug }: { workspaceId: string; 
       const memberRef = crypto.randomUUID();
       const epoch = Math.max(0, ...inbox.epochs.map((e) => e.epoch)) + 1;
       const g = await enclave.workspaceInbox.generate(workspaceId, epoch, { memberRef, publicKey: me.publicKey });
-      const r = await initKey({ data: { workspaceId, epoch, publicKey: b64uEncode(g.publicKey), kid: b64uEncode(g.kid), memberRef, envelope: b64uEncode(g.envelope) } });
+      const r = await withSudo(() => initKey({ data: { workspaceId, epoch, publicKey: b64uEncode(g.publicKey), kid: b64uEncode(g.kid), memberRef, envelope: b64uEncode(g.envelope) } }));
       if (r.result === "ok") toast.success(t("wsInbox.key.created"));
       else toast.error(t(`wsInbox.result.${r.result}`));
     } catch {

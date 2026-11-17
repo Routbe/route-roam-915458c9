@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { requestStepUp, withStepUp } from "@/components/auth/StepUpDialog";
+import { requestStepUp } from "@/components/auth/StepUpDialog";
+import { withSudo } from "@/lib/auth/sudo-client";
 import { enclave, EnclaveError } from "@/lib/crypto-enclave/client";
 import type { RecoveryCeremony } from "@/lib/crypto-enclave/recovery-mpc";
 import { ceremonyMessage as message, takeInput, takeValue } from "@/components/recovery/ceremony-ui";
@@ -134,7 +135,7 @@ function Overview({ state, deviceKey, onSetup, onRestore, onChanged }: {
             onClick={async () => {
               setBusy(true);
               try {
-                await withStepUp(() => remove());
+                await withSudo(() => remove());
                 toast.success("Herstelkluis verwijderd. Je papieren woorden werken niet meer.");
                 onChanged();
               } catch (e) { toast.error(message(e)); } finally { setBusy(false); setConfirm(false); }
@@ -267,7 +268,7 @@ function SetupWizard({ userId, hasDeviceKey, onDone, onCancel }: { userId: strin
       }
       const sealed = sealedRef.current;
       if (!sealed.saved) {
-        const r = await withStepUp(() => save({ data: { ceremony: ceremonyToWire(sealed.ceremony, sealed.keyId), deviceCredential: sealed.credential, loginKey: toB64(sealed.loginKey) } }));
+        const r = await withSudo(() => save({ data: { ceremony: ceremonyToWire(sealed.ceremony, sealed.keyId), deviceCredential: sealed.credential, loginKey: toB64(sealed.loginKey) } }));
         if (!r.ok) {
           throw new Error(r.error === "schema_pending"
             ? "De herstelkluis met 3 van 4 stukken is nog niet geactiveerd. Er is niets opgeslagen."

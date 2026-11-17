@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { requireAuth } from "@/lib/auth/middleware";
+import { requireAuth, requireSudo } from "@/lib/auth/middleware";
 import type { PresenceRules } from "./custom-presence";
 
 export const getCustomPresence = createServerFn({ method: "GET" })
@@ -8,7 +8,7 @@ export const getCustomPresence = createServerFn({ method: "GET" })
 
 /** Returns the new key once; it is never shown again. */
 export const rotatePresenceApiKey = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireAuth, requireSudo("presence_key_rotate")])
   .handler(async ({ context }) => ({ key: await (await import("./custom-presence.server")).rotatePresenceKey(context.userId) }));
 
 export const revokePresenceApiKey = createServerFn({ method: "POST" })

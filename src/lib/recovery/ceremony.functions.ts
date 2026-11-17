@@ -11,7 +11,7 @@
  */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireAuth } from "@/lib/auth/middleware";
+import { requireAuth, requireSudo } from "@/lib/auth/middleware";
 import { B64_RE, CEREMONY_ID_RE, CEREMONY_RESTORES_PER_HOUR, MASTER_B64_MAX, SHARD_B64_MAX, type CeremonyRow } from "./ceremony-wire";
 
 const shard = z.string().min(64).max(SHARD_B64_MAX).regex(B64_RE);
@@ -76,7 +76,7 @@ export const getRecoveryServerKey = createServerFn({ method: "GET" })
   });
 
 export const saveRecoveryCeremony = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireAuth, requireSudo("recovery_vault")])
   .inputValidator((d: unknown) =>
     z.object({ ceremony: wireSchema, deviceCredential: credentialSchema, loginKey: z.string().regex(/^[A-Za-z0-9+/]{43}=$/) }).parse(d),
   )
@@ -115,7 +115,7 @@ export const saveRecoveryCeremony = createServerFn({ method: "POST" })
   });
 
 export const deleteRecoveryCeremony = createServerFn({ method: "POST" })
-  .middleware([requireAuth])
+  .middleware([requireAuth, requireSudo("recovery_vault")])
   .handler(async ({ context }) => {
     const { requirePasskeyStepUp } = await import("@/lib/auth/step-up-guard.server");
     await requirePasskeyStepUp(context.userId, "recovery_vault");
