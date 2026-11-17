@@ -155,7 +155,11 @@ export async function claimAgentWorkspace(
     .filter((r) => r.success)
     .map((r) => r.data);
   const apps: ClaimedApp[] = [];
-  if (specs.length) {
+  // New OAuth clients need a KYC legal identity (legal-identity-gate.server.ts), also when an agent prepared them.
+  const { hasDeveloperLegalIdentity } = await import("@/lib/oauth/legal-identity-gate.server");
+  const mayIssue = specs.length > 0 && (await hasDeveloperLegalIdentity(userId));
+  if (specs.length && !mayIssue) console.warn("[agent:claim] app specs skipped: no legal identity");
+  if (mayIssue) {
     const { createClient } = await import("@/lib/oauth/provider.server");
     await withDbContext({ userId, workspaceId: row.workspace_id }, async () => {
       for (const s of specs) {
