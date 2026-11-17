@@ -106,6 +106,9 @@ use the editor.
 ## Booking phases B–G
 - Phase B–G security rules live in src/lib/booking-engine/AGENTS.md and bind every booking, recovery and crypto change. Why: the owner's hard requirements stay in one scoped place.
 
+## Sudo Mode
+- Sensitive mutations (merge, vault, key/secret rotation) use requireSudo(label): a signed __Host-sudo_session minted only from a general passkey step-up proof, bound to member and sign-in session, valid exactly 300 s from the passkey verification (src/lib/auth/sudo-rules.ts); database-clock passkey proofs stay in addition. Why: one passkey tap covers a short burst of actions without ever trusting a stretched or transplanted window.
+
 ## Server function guards
 - createServerFn exports need requireAuth/requireDeveloperAccess/optionalAuth or an entry in PUBLIC_SERVER_FNS (src/test/server-fn-auth-guard.test.ts). Why: route gates only hide UI.
 
