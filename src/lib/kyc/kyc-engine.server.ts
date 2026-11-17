@@ -10,8 +10,9 @@
  *   status   none | pending | verified, from Neon only
  *
  * Stored: the nullifier (identity_verifications.unique_human_id, and with db/0288 one row
- * per anchor in verified_identity_nullifiers), provider, is_real_human, jurisdiction. Never stored
- * or logged: names, document or personal numbers, dates, images, the decision body.
+ * per anchor in verified_identity_nullifiers), provider, is_real_human, jurisdiction, and from
+ * db/0290 the age floor (whole years, capped at 21). Never stored or logged: names, document or
+ * personal numbers, the date of birth, images, the decision body.
  * Raw webhook bytes, decision bytes, canonical anchors and the pepper copy are Node.js Buffers
  * (secure-buffer.ts) and are zero-filled with fill(0) right after use; the anchors immediately
  * after the nullifiers are computed. JavaScript strings parsed from the provider response cannot be
@@ -108,6 +109,8 @@ export async function attestDidit(input: {
   kinds: readonly CanonicalAnchor["kind"][];
   isRealHuman: boolean;
   jurisdiction: string;
+  /** Capped age in whole years (age-floor.ts), recorded only from db/0290 on. */
+  ageFloor?: number | null;
 }): Promise<AttestResult> {
   const { sql } = await import("@/lib/neon");
   const id = await import("@/lib/identity/identity.server");
@@ -137,8 +140,12 @@ export async function attestDidit(input: {
 
   try {
     if (await hasSchemaFeature("0288")) {
-      const [r] = (await sql`select public.rout_kyc_attest('didit', ${[...input.nullifiers]}::text[], ${[...input.kinds]}::text[],
-          ${input.isRealHuman}, true, ${input.jurisdiction}) as code`) as { code: string }[];
+      const age = await hasSchemaFeature("0290");
+      const [r] = (age
+        ? await sql`select public.rout_kyc_attest('didit', ${[...input.nullifiers]}::text[], ${[...input.kinds]}::text[],
+            ${input.isRealHuman}, true, ${input.jurisdiction}, ${input.ageFloor ?? null}::smallint) as code`
+        : await sql`select public.rout_kyc_attest('didit', ${[...input.nullifiers]}::text[], ${[...input.kinds]}::text[],
+            ${input.isRealHuman}, true, ${input.jurisdiction}) as code`) as { code: string }[];
       if (r?.code === "identity_already_attested_across_providers" || r?.code === "duplicate_human") {
         await release();
         await id.consumeSession(input.state, "didit");
@@ -275,6 +282,7 @@ async function approve(member: { userId: string; state: string }, sessionId: str
       kinds,
       isRealHuman: reading.isRealHuman,
       jurisdiction: reading.jurisdiction,
+      ageFloor: reading.ageFloor,
     });
   } finally {
     wipeAnchors(anchors);

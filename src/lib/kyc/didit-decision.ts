@@ -1,8 +1,10 @@
 /**
  * Pure reading of a Didit v3 decision (GET /v3/session/{id}/decision/). Only the fields needed for a
- * canonical anchor and the zero-knowledge claims are touched; names, dates of birth, addresses,
- * images and MRZ text are never copied out of the decision object.
+ * canonical anchor and the zero-knowledge claims are touched; names, addresses, images and MRZ text
+ * are never copied out of the decision object. The date of birth is reduced on the spot to a capped
+ * age floor (age-floor.ts) and never copied either.
  */
+import { ageFloorFromBirthDate } from "./age-floor";
 import type { DocumentClaims } from "./canonical-id";
 import { canonicalCountry } from "./canonical-id";
 
@@ -10,10 +12,10 @@ export type DiditStatus =
   | "Approved" | "Declined" | "In Review" | "In Progress" | "Not Started" | "Abandoned" | "Expired" | "Kyc Expired" | "Resubmitted" | "Awaiting User";
 
 export type DecisionReading =
-  | { ok: true; claims: DocumentClaims; jurisdiction: string; isRealHuman: boolean }
+  | { ok: true; claims: DocumentClaims; jurisdiction: string; isRealHuman: boolean; ageFloor: number | null }
   | { ok: false; reason: "not_approved" | "no_document" | "vendor_mismatch" | "session_mismatch" };
 
-type Doc = { status?: unknown; document_type?: unknown; document_number?: unknown; personal_number?: unknown; issuing_state?: unknown; nationality?: unknown };
+type Doc = { status?: unknown; document_type?: unknown; document_number?: unknown; personal_number?: unknown; issuing_state?: unknown; nationality?: unknown; date_of_birth?: unknown };
 type Check = { status?: unknown };
 
 const str = (v: unknown): string | null => (typeof v === "string" && v.length <= 128 ? v : null);
@@ -24,7 +26,7 @@ function first<T extends { status?: unknown }>(list: unknown): T | null {
   return (list.find((x) => x && typeof x === "object" && approved(x as T)) as T | undefined) ?? null;
 }
 
-export function readDiditDecision(decision: unknown, expect: { sessionId: string; vendorData: string }): DecisionReading {
+export function readDiditDecision(decision: unknown, expect: { sessionId: string; vendorData: string }, now: Date = new Date()): DecisionReading {
   const d = (decision && typeof decision === "object" ? decision : {}) as Record<string, unknown>;
   if (d["session_id"] !== expect.sessionId) return { ok: false, reason: "session_mismatch" };
   if (d["vendor_data"] !== expect.vendorData) return { ok: false, reason: "vendor_mismatch" };
@@ -50,6 +52,8 @@ export function readDiditDecision(decision: unknown, expect: { sessionId: string
     jurisdiction,
     // A real human means a passed liveness check, and no failed face match against the document.
     isRealHuman: Boolean(live) && faces.every((f) => f?.status === undefined || approved(f)),
+    // The chip's date of birth is state-signed; OCR is the fallback.
+    ageFloor: ageFloorFromBirthDate(chip?.date_of_birth, now) ?? ageFloorFromBirthDate(ocr?.date_of_birth, now),
   };
 }
 
