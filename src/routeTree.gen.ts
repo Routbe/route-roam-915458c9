@@ -213,6 +213,7 @@ import { Route as SafetyTermsRouteImport } from './routes/safety.terms'
 import { Route as SafetyTransparencyRouteImport } from './routes/safety.transparency'
 import { Route as SafetyZeroKnowledgeRouteImport } from './routes/safety.zero-knowledge'
 import { Route as SecurePasswordRouteImport } from './routes/secure.password'
+import { Route as SignRequestIdRouteImport } from './routes/sign.$requestId'
 import { Route as SolutionsIndexRouteImport } from './routes/solutions.index'
 import { Route as SolutionsAgenciesRouteImport } from './routes/solutions.agencies'
 import { Route as SolutionsCreatorsRouteImport } from './routes/solutions.creators'
@@ -263,6 +264,7 @@ import { Route as AuthenticatedDashboardLinksRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardProfileRouteImport } from './routes/_authenticated/dashboard.profile'
 import { Route as AuthenticatedDashboardQrRouteImport } from './routes/_authenticated/dashboard.qr'
 import { Route as AuthenticatedDashboardRoutesRouteImport } from './routes/_authenticated/dashboard.routes'
+import { Route as AuthenticatedSignIndexRouteImport } from './routes/_authenticated/sign.index'
 import { Route as AuthenticatedStudioAccountRouteImport } from './routes/_authenticated/studio_.account'
 import { Route as AuthenticatedStudioAgendaRouteImport } from './routes/_authenticated/studio_.agenda'
 import { Route as AuthenticatedStudioBookingRouteImport } from './routes/_authenticated/studio_.booking'
@@ -1482,6 +1484,11 @@ const SecurePasswordRoute = SecurePasswordRouteImport.update({
   path: '/secure/password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignRequestIdRoute = SignRequestIdRouteImport.update({
+  id: '/sign/$requestId',
+  path: '/sign/$requestId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SolutionsIndexRoute = SolutionsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -1762,6 +1769,11 @@ const AuthenticatedDashboardRoutesRoute =
     path: '/dashboard/routes',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSignIndexRoute = AuthenticatedSignIndexRouteImport.update({
+  id: '/sign/',
+  path: '/sign/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedStudioAccountRoute =
   AuthenticatedStudioAccountRouteImport.update({
     id: '/studio_/account',
@@ -2992,6 +3004,7 @@ export interface FileRoutesByFullPath {
   '/safety/transparency': typeof SafetyTransparencyRoute
   '/safety/zero-knowledge': typeof SafetyZeroKnowledgeRoute
   '/secure/password': typeof SecurePasswordRoute
+  '/sign/$requestId': typeof SignRequestIdRoute
   '/solutions/agencies': typeof SolutionsAgenciesRoute
   '/solutions/creators': typeof SolutionsCreatorsRoute
   '/solutions/developers': typeof SolutionsDevelopersRoute
@@ -3145,6 +3158,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/console/': typeof AuthenticatedConsoleIndexRoute
   '/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/sign/': typeof AuthenticatedSignIndexRoute
   '/qr-code-generator/payment/': typeof QrCodeGeneratorPaymentIndexRoute
   '/console/apps/$appId': typeof AuthenticatedConsoleAppsAppIdRouteWithChildren
   '/console/apps/new': typeof AuthenticatedConsoleAppsNewRoute
@@ -3422,6 +3436,7 @@ export interface FileRoutesByTo {
   '/safety/transparency': typeof SafetyTransparencyRoute
   '/safety/zero-knowledge': typeof SafetyZeroKnowledgeRoute
   '/secure/password': typeof SecurePasswordRoute
+  '/sign/$requestId': typeof SignRequestIdRoute
   '/solutions/agencies': typeof SolutionsAgenciesRoute
   '/solutions/creators': typeof SolutionsCreatorsRoute
   '/solutions/developers': typeof SolutionsDevelopersRoute
@@ -3574,6 +3589,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/console': typeof AuthenticatedConsoleIndexRoute
   '/dashboard': typeof AuthenticatedDashboardIndexRoute
+  '/sign': typeof AuthenticatedSignIndexRoute
   '/qr-code-generator/payment': typeof QrCodeGeneratorPaymentIndexRoute
   '/console/apps/new': typeof AuthenticatedConsoleAppsNewRoute
   '/studio/personal/$feature': typeof AuthenticatedStudioPersonalFeatureRoute
@@ -3867,6 +3883,7 @@ export interface FileRoutesById {
   '/safety/transparency': typeof SafetyTransparencyRoute
   '/safety/zero-knowledge': typeof SafetyZeroKnowledgeRoute
   '/secure/password': typeof SecurePasswordRoute
+  '/sign/$requestId': typeof SignRequestIdRoute
   '/solutions/agencies': typeof SolutionsAgenciesRoute
   '/solutions/creators': typeof SolutionsCreatorsRoute
   '/solutions/developers': typeof SolutionsDevelopersRoute
@@ -4020,6 +4037,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/console/': typeof AuthenticatedConsoleIndexRoute
   '/_authenticated/dashboard/': typeof AuthenticatedDashboardIndexRoute
+  '/_authenticated/sign/': typeof AuthenticatedSignIndexRoute
   '/qr-code-generator/payment/': typeof QrCodeGeneratorPaymentIndexRoute
   '/_authenticated/console/apps/$appId': typeof AuthenticatedConsoleAppsAppIdRouteWithChildren
   '/_authenticated/console/apps/new': typeof AuthenticatedConsoleAppsNewRoute
@@ -4314,6 +4332,7 @@ export interface FileRouteTypes {
     | '/safety/transparency'
     | '/safety/zero-knowledge'
     | '/secure/password'
+    | '/sign/$requestId'
     | '/solutions/agencies'
     | '/solutions/creators'
     | '/solutions/developers'
@@ -4467,6 +4486,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/console/'
     | '/dashboard/'
+    | '/sign/'
     | '/qr-code-generator/payment/'
     | '/console/apps/$appId'
     | '/console/apps/new'
@@ -4744,6 +4764,7 @@ export interface FileRouteTypes {
     | '/safety/transparency'
     | '/safety/zero-knowledge'
     | '/secure/password'
+    | '/sign/$requestId'
     | '/solutions/agencies'
     | '/solutions/creators'
     | '/solutions/developers'
@@ -4896,6 +4917,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/console'
     | '/dashboard'
+    | '/sign'
     | '/qr-code-generator/payment'
     | '/console/apps/new'
     | '/studio/personal/$feature'
@@ -5188,6 +5210,7 @@ export interface FileRouteTypes {
     | '/safety/transparency'
     | '/safety/zero-knowledge'
     | '/secure/password'
+    | '/sign/$requestId'
     | '/solutions/agencies'
     | '/solutions/creators'
     | '/solutions/developers'
@@ -5341,6 +5364,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/console/'
     | '/_authenticated/dashboard/'
+    | '/_authenticated/sign/'
     | '/qr-code-generator/payment/'
     | '/_authenticated/console/apps/$appId'
     | '/_authenticated/console/apps/new'
@@ -5547,6 +5571,7 @@ export interface RootRouteChildren {
   ReviewTokenRoute: typeof ReviewTokenRoute
   SSlugRoute: typeof SSlugRoute
   SecurePasswordRoute: typeof SecurePasswordRoute
+  SignRequestIdRoute: typeof SignRequestIdRoute
   StatsTokenRoute: typeof StatsTokenRoute
   StudioGridRoute: typeof StudioGridRoute
   SubscribeConfirmRoute: typeof SubscribeConfirmRoute
@@ -7118,6 +7143,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SecurePasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign/$requestId': {
+      id: '/sign/$requestId'
+      path: '/sign/$requestId'
+      fullPath: '/sign/$requestId'
+      preLoaderRoute: typeof SignRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/solutions/': {
       id: '/solutions/'
       path: '/'
@@ -7466,6 +7498,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/routes'
       fullPath: '/dashboard/routes'
       preLoaderRoute: typeof AuthenticatedDashboardRoutesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sign/': {
+      id: '/_authenticated/sign/'
+      path: '/sign'
+      fullPath: '/sign/'
+      preLoaderRoute: typeof AuthenticatedSignIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/studio_/account': {
@@ -8965,6 +9004,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedStudioAgendaRoute: typeof AuthenticatedStudioAgendaRoute
   AuthenticatedStudioBookingRoute: typeof AuthenticatedStudioBookingRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedSignIndexRoute: typeof AuthenticatedSignIndexRoute
   AuthenticatedStudioPersonalFeatureRoute: typeof AuthenticatedStudioPersonalFeatureRoute
   AuthenticatedStudioWorkspacesClaimRoute: typeof AuthenticatedStudioWorkspacesClaimRoute
   AuthenticatedStudioWorkspacesNewRoute: typeof AuthenticatedStudioWorkspacesNewRoute
@@ -8994,6 +9034,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedStudioAgendaRoute: AuthenticatedStudioAgendaRoute,
   AuthenticatedStudioBookingRoute: AuthenticatedStudioBookingRoute,
   AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+  AuthenticatedSignIndexRoute: AuthenticatedSignIndexRoute,
   AuthenticatedStudioPersonalFeatureRoute:
     AuthenticatedStudioPersonalFeatureRoute,
   AuthenticatedStudioWorkspacesClaimRoute:
@@ -9531,6 +9572,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReviewTokenRoute: ReviewTokenRoute,
   SSlugRoute: SSlugRoute,
   SecurePasswordRoute: SecurePasswordRoute,
+  SignRequestIdRoute: SignRequestIdRoute,
   StatsTokenRoute: StatsTokenRoute,
   StudioGridRoute: StudioGridRoute,
   SubscribeConfirmRoute: SubscribeConfirmRoute,
