@@ -253,6 +253,7 @@ import { Route as AuthenticatedConsoleApiRouteImport } from './routes/_authentic
 import { Route as AuthenticatedConsoleAppsRouteImport } from './routes/_authenticated/console.apps'
 import { Route as AuthenticatedConsoleBillingRouteImport } from './routes/_authenticated/console.billing'
 import { Route as AuthenticatedConsoleConnectorsRouteImport } from './routes/_authenticated/console.connectors'
+import { Route as AuthenticatedConsoleDocsRouteImport } from './routes/_authenticated/console.docs'
 import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authenticated/dashboard.index'
 import { Route as AuthenticatedDashboardAssetsRouteImport } from './routes/_authenticated/dashboard.assets'
 import { Route as AuthenticatedDashboardBlueskyRouteImport } from './routes/_authenticated/dashboard.bluesky'
@@ -1701,6 +1702,12 @@ const AuthenticatedConsoleConnectorsRoute =
     path: '/connectors',
     getParentRoute: () => AuthenticatedConsoleRoute,
   } as any)
+const AuthenticatedConsoleDocsRoute =
+  AuthenticatedConsoleDocsRouteImport.update({
+    id: '/docs',
+    path: '/docs',
+    getParentRoute: () => AuthenticatedConsoleRoute,
+  } as any)
 const AuthenticatedDashboardIndexRoute =
   AuthenticatedDashboardIndexRouteImport.update({
     id: '/dashboard/',
@@ -3034,6 +3041,7 @@ export interface FileRoutesByFullPath {
   '/console/apps': typeof AuthenticatedConsoleAppsRouteWithChildren
   '/console/billing': typeof AuthenticatedConsoleBillingRoute
   '/console/connectors': typeof AuthenticatedConsoleConnectorsRoute
+  '/console/docs': typeof AuthenticatedConsoleDocsRoute
   '/dashboard/assets': typeof AuthenticatedDashboardAssetsRoute
   '/dashboard/bluesky': typeof AuthenticatedDashboardBlueskyRoute
   '/dashboard/domains': typeof AuthenticatedDashboardDomainsRoute
@@ -3462,6 +3470,7 @@ export interface FileRoutesByTo {
   '/console/api': typeof AuthenticatedConsoleApiRoute
   '/console/billing': typeof AuthenticatedConsoleBillingRoute
   '/console/connectors': typeof AuthenticatedConsoleConnectorsRoute
+  '/console/docs': typeof AuthenticatedConsoleDocsRoute
   '/dashboard/assets': typeof AuthenticatedDashboardAssetsRoute
   '/dashboard/bluesky': typeof AuthenticatedDashboardBlueskyRoute
   '/dashboard/domains': typeof AuthenticatedDashboardDomainsRoute
@@ -3907,6 +3916,7 @@ export interface FileRoutesById {
   '/_authenticated/console/apps': typeof AuthenticatedConsoleAppsRouteWithChildren
   '/_authenticated/console/billing': typeof AuthenticatedConsoleBillingRoute
   '/_authenticated/console/connectors': typeof AuthenticatedConsoleConnectorsRoute
+  '/_authenticated/console/docs': typeof AuthenticatedConsoleDocsRoute
   '/_authenticated/dashboard/assets': typeof AuthenticatedDashboardAssetsRoute
   '/_authenticated/dashboard/bluesky': typeof AuthenticatedDashboardBlueskyRoute
   '/_authenticated/dashboard/domains': typeof AuthenticatedDashboardDomainsRoute
@@ -4353,6 +4363,7 @@ export interface FileRouteTypes {
     | '/console/apps'
     | '/console/billing'
     | '/console/connectors'
+    | '/console/docs'
     | '/dashboard/assets'
     | '/dashboard/bluesky'
     | '/dashboard/domains'
@@ -4781,6 +4792,7 @@ export interface FileRouteTypes {
     | '/console/api'
     | '/console/billing'
     | '/console/connectors'
+    | '/console/docs'
     | '/dashboard/assets'
     | '/dashboard/bluesky'
     | '/dashboard/domains'
@@ -5225,6 +5237,7 @@ export interface FileRouteTypes {
     | '/_authenticated/console/apps'
     | '/_authenticated/console/billing'
     | '/_authenticated/console/connectors'
+    | '/_authenticated/console/docs'
     | '/_authenticated/dashboard/assets'
     | '/_authenticated/dashboard/bluesky'
     | '/_authenticated/dashboard/domains'
@@ -7385,6 +7398,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsoleConnectorsRouteImport
       parentRoute: typeof AuthenticatedConsoleRoute
     }
+    '/_authenticated/console/docs': {
+      id: '/_authenticated/console/docs'
+      path: '/docs'
+      fullPath: '/console/docs'
+      preLoaderRoute: typeof AuthenticatedConsoleDocsRouteImport
+      parentRoute: typeof AuthenticatedConsoleRoute
+    }
     '/_authenticated/dashboard/': {
       id: '/_authenticated/dashboard/'
       path: '/dashboard'
@@ -8909,6 +8929,7 @@ interface AuthenticatedConsoleRouteChildren {
   AuthenticatedConsoleAppsRoute: typeof AuthenticatedConsoleAppsRouteWithChildren
   AuthenticatedConsoleBillingRoute: typeof AuthenticatedConsoleBillingRoute
   AuthenticatedConsoleConnectorsRoute: typeof AuthenticatedConsoleConnectorsRoute
+  AuthenticatedConsoleDocsRoute: typeof AuthenticatedConsoleDocsRoute
   AuthenticatedConsoleIndexRoute: typeof AuthenticatedConsoleIndexRoute
 }
 
@@ -8917,6 +8938,7 @@ const AuthenticatedConsoleRouteChildren: AuthenticatedConsoleRouteChildren = {
   AuthenticatedConsoleAppsRoute: AuthenticatedConsoleAppsRouteWithChildren,
   AuthenticatedConsoleBillingRoute: AuthenticatedConsoleBillingRoute,
   AuthenticatedConsoleConnectorsRoute: AuthenticatedConsoleConnectorsRoute,
+  AuthenticatedConsoleDocsRoute: AuthenticatedConsoleDocsRoute,
   AuthenticatedConsoleIndexRoute: AuthenticatedConsoleIndexRoute,
 }
 
