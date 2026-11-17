@@ -3,7 +3,7 @@
  * mandatory read inspection and a passkey-confirmed signature record; no PAdES / qualified
  * signature yet, and nothing may claim one.
  */
-import { blake3 } from "@noble/hashes/blake3";
+import { blake3 } from "@noble/hashes/blake3.js";
 
 export const SIGN_MIN_READ = { min: 10, max: 600, default: 30 } as const;
 export const SIGN_DAYS = { min: 1, max: 30, default: 7 } as const;
