@@ -43,7 +43,10 @@ export const redirectUriSchema = z
 export const MAX_REDIRECT_URIS = 10;
 
 /** Agent scopes are human-delegated and always ride on ≤1 h tokens (src/lib/agent/agent-scopes.ts). */
-export const scopeEnum = z.enum(["openid", "profile", "email", "linked_accounts", "accounts:merge", "identity:handle_reservation", "assets:write", "profile:draft", "identity:read_public"]);
+export const scopeEnum = z.enum(["openid", "profile", "email", "linked_accounts", "accounts:merge", "identity:handle_reservation", "assets:write", "profile:draft", "identity:read_public",
+  // Sovereign Identity OS (identity-os-scopes.ts); an app registers at most one age_gate:N.
+  "sybil_proof", "real_human", "legal_identity",
+  "age_gate:13", "age_gate:14", "age_gate:15", "age_gate:16", "age_gate:17", "age_gate:18", "age_gate:19", "age_gate:20", "age_gate:21"]);
 
 export const clientSchema = z
   .object({
@@ -56,7 +59,7 @@ export const clientSchema = z
     termsUrl: optionalHttpsUrl,
     redirectUris: z.array(redirectUriSchema).max(MAX_REDIRECT_URIS),
     postLogoutRedirectUris: z.array(redirectUriSchema).max(MAX_REDIRECT_URIS).optional(),
-    scopes: z.array(scopeEnum).max(7),
+    scopes: z.array(scopeEnum).max(14).refine((s) => s.filter((x) => x.startsWith("age_gate:")).length <= 1, "Kies één leeftijdsgrens."),
     flowPreference: z.enum(["seamless", "strict"]).optional(),
     richIdentityEnabled: z.boolean().optional(),
     handleSyncEnabled: z.boolean().optional(),

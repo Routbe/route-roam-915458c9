@@ -376,5 +376,9 @@
   "secure.pw.accountRowBody": "Optioneel. Je wachtwoord verlaat je apparaat nooit (OPAQUE). Instellen, wijzigen of verwijderen vraagt je passkey.",
   "secure.pw.accountRowCta": "Beheren",
   "auth.pw.signupWithPassword": "Liever een wachtwoord? Maak je account met een wachtwoord",
-  "auth.pw.resetGone": "Wachtwoorden worden niet meer per e-mail ingesteld. Log in met je passkey of een e-maillink en stel daarna een wachtwoord in via je account."
+  "auth.pw.resetGone": "Wachtwoorden worden niet meer per e-mail ingesteld. Log in met je passkey of een e-maillink en stel daarna een wachtwoord in via je account.",
+  "auth.scope.sybilProof": "Een anoniem bewijs dat je één echt mens bent, alleen geldig bij {{app}} — apps kunnen je onderling niet herkennen",
+  "auth.scope.realHuman": "Alleen of je met een zero-knowledge-bewijs als echt mens bent bevestigd (ja/nee)",
+  "auth.scope.ageGate": "Alleen of je minstens {{age}} jaar bent (ja/nee), nooit je geboortedatum",
+  "auth.scope.legalIdentity": "Of je wettelijke identiteit geverifieerd is, en je wettelijke naam als ROUT die bewaart — enkel als je dit aanvinkt"
 }
