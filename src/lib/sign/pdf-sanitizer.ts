@@ -75,7 +75,7 @@ async function inflate(data: Uint8Array): Promise<Uint8Array | null> {
     const ds = new DecompressionStream("deflate");
     const stream = new ReadableStream<BufferSource>({
       start(c) {
-        c.enqueue(data);
+        c.enqueue(data as BufferSource);
         c.close();
       },
     }).pipeThrough(ds);
